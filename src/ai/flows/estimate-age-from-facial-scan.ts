@@ -43,7 +43,7 @@ export async function estimateAgeFromFacialScan(
 
 const prompt = ai.definePrompt({
   name: 'estimateAgeFromFacialScanPrompt',
-  input: {schema: EstimateAgeFromFacialScanInputSchema},
+  input: {schema: EstimateAgeFromFaci_alScanInputSchema},
   output: {schema: EstimateAgeFromFacialScanOutputSchema},
   prompt: `You are an expert in age estimation from facial scans. You will estimate the age of a person based on their facial scan and compare it to their date of birth to ensure they meet age requirements for gambling.
 
