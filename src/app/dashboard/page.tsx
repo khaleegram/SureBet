@@ -88,7 +88,7 @@ export default function DashboardPage() {
           <CardHeader>
             <CardTitle>Recent Transactions</CardTitle>
             <CardDescription>
-              A log of your recent deposits and withdrawals.
+              A log of your recent deposits, withdrawals, and betting activity.
             </CardDescription>
           </CardHeader>
           <CardContent>
