@@ -24,7 +24,7 @@ export default function DashboardPage() {
           Welcome Back, Player
         </h1>
         <p className="text-muted-foreground">
-          Here's a snapshot of your activity on SureBet Simulator.
+          Here's a snapshot of your activity on SureBet.
         </p>
       </div>
 

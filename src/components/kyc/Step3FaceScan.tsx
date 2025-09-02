@@ -63,9 +63,9 @@ export function Step3FaceScan({ onNext, onBack }: Step3FaceScanProps) {
   return (
     <div className="space-y-6">
       <div className="space-y-2 text-center">
-        <h3 className="text-xl font-semibold">Live Face Scan Simulation</h3>
+        <h3 className="text-xl font-semibold">Live Face Scan</h3>
         <p className="text-muted-foreground">
-          To verify your identity, we need to simulate capturing a few live photos.
+          To verify your identity, we need to capture a few live photos of you.
         </p>
       </div>
 

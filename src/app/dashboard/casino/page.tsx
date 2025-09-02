@@ -60,7 +60,7 @@ export default function CasinoPage() {
     <div className="space-y-8">
        <div>
         <h1 className="text-3xl font-bold tracking-tight font-headline">Casino</h1>
-        <p className="text-muted-foreground">Experience the thrill of our simulated casino games.</p>
+        <p className="text-muted-foreground">Experience the thrill of our exclusive casino games.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

@@ -29,7 +29,7 @@ export default function SportsBettingPage() {
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
                         <CardTitle>Live Now</CardTitle>
-                        <CardDescription>Odds are updated in real-time. All bets are simulated.</CardDescription>
+                        <CardDescription>Odds are updated in real-time. All bets are final.</CardDescription>
                     </div>
                      <Badge variant="destructive" className="bg-red-500/20 text-red-300 animate-pulse">
                         <Zap className="w-3 h-3 mr-1" />

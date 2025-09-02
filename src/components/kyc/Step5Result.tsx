@@ -16,7 +16,7 @@ const statusConfig = {
   success: {
     icon: <CheckCircle className="h-16 w-16 text-green-500" />,
     title: 'Verification Successful!',
-    description: 'Welcome to SureBet Simulator. You can now access all features.',
+    description: 'Welcome to SureBet. You can now access all features.',
   },
   failure: {
     icon: <XCircle className="h-16 w-16 text-destructive" />,

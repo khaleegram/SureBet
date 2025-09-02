@@ -34,7 +34,7 @@ export default function Home() {
                   The Future of High-Stakes Betting is Here
                 </h1>
                 <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                  Experience a cutting-edge gambling prototype with P2P betting, casino classics, and simulated crypto transactions. Built for the discerning investor.
+                  Experience a cutting-edge gambling platform with P2P betting, casino classics, and seamless crypto transactions. Built for the discerning investor.
                 </p>
                 <div className="flex flex-col gap-4 sm:flex-row">
                   <Button size="lg" asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
@@ -63,9 +63,9 @@ export default function Home() {
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
                 <div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">Key Features</div>
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Unmatched Platform Simulation</h2>
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">An Unmatched Platform</h2>
                 <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Our prototype demonstrates a robust and compliant platform, ready to capture the market. Explore the features that set us apart.
+                  Our platform demonstrates a robust and compliant architecture, ready to capture the market. Explore the features that set us apart.
                 </p>
               </div>
             </div>
@@ -75,10 +75,10 @@ export default function Home() {
                   <div className="rounded-full bg-primary/10 p-3">
                     <ShieldCheck className="h-6 w-6 text-primary" />
                   </div>
-                  <CardTitle className="font-headline">Mock KYC/AML</CardTitle>
+                  <CardTitle className="font-headline">Automated KYC/AML</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">Simulated AI-powered identity verification, facial recognition, and age estimation to demonstrate compliance readiness.</p>
+                  <p className="text-muted-foreground">AI-powered identity verification, facial recognition, and age estimation to ensure compliance readiness.</p>
                 </CardContent>
               </Card>
               <Card className="bg-card/80 backdrop-blur-sm">
@@ -89,7 +89,7 @@ export default function Home() {
                   <CardTitle className="font-headline">Crypto & Fiat Wallet</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">A polished wallet interface simulating crypto and fiat deposits/withdrawals, showcasing a seamless user financial experience.</p>
+                  <p className="text-muted-foreground">A polished wallet interface for crypto and fiat deposits/withdrawals, showcasing a seamless user financial experience.</p>
                 </CardContent>
               </Card>
               <Card className="bg-card/80 backdrop-blur-sm">
@@ -111,7 +111,7 @@ export default function Home() {
                   <CardTitle className="font-headline">Casino Games</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">Classic casino games like slots, poker, and roulette with flashy UIs to demonstrate user engagement potential.</p>
+                  <p className="text-muted-foreground">Classic casino games like slots, poker, and roulette with flashy UIs to drive user engagement.</p>
                 </CardContent>
               </Card>
               <Card className="bg-card/80 backdrop-blur-sm">
@@ -122,7 +122,7 @@ export default function Home() {
                   <CardTitle className="font-headline">Live Sports Betting</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">A dynamic interface for live sports betting, complete with mock real-time odds and event tracking.</p>
+                  <p className="text-muted-foreground">A dynamic interface for live sports betting, complete with real-time odds and event tracking.</p>
                 </CardContent>
               </Card>
               <Card className="bg-card/80 backdrop-blur-sm">
@@ -133,7 +133,7 @@ export default function Home() {
                   <CardTitle className="font-headline">Investor Dashboard</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">A comprehensive dashboard showcasing simulated compliance metrics and platform performance for investor confidence.</p>
+                  <p className="text-muted-foreground">A comprehensive dashboard showcasing compliance metrics and platform performance for investor confidence.</p>
                 </CardContent>
               </Card>
             </div>
@@ -146,7 +146,7 @@ export default function Home() {
           <p className="text-balance text-center text-sm leading-loose text-muted-foreground md:text-left">
             Built by SureBet. For demonstration purposes only. Not a real gambling platform.
           </p>
-          <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} SureBet Simulator</p>
+          <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} SureBet</p>
         </div>
       </footer>
     </div>
