@@ -35,7 +35,7 @@ const CompareFacialEmbeddingsOutputSchema = z.object({
   isMatch: z
     .boolean()
     .describe(
-      'Whether the лица images are determined to be a match based on the confidence score.'
+      'Whether the facial images are determined to be a match based on the confidence score.'
     ),
   reviewRequired: z
     .boolean()

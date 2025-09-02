@@ -17,6 +17,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PlusCircle, Swords, Zap } from 'lucide-react';
 import Image from 'next/image';
+import { Badge } from '@/components/ui/badge';
 
 const openBets = [
     { event: 'MMA Fight Night: Titan vs. Goliath', market: 'Winner', odds: '1.85', stake: '0.1 ETH', by: 'UserA' },

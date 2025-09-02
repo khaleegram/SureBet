@@ -43,7 +43,7 @@ export async function estimateAgeFromFacialScan(
 
 const prompt = ai.definePrompt({
   name: 'estimateAgeFromFacialScanPrompt',
-  input: {schema: EstimateAgeFromFaci_alScanInputSchema},
+  input: {schema: EstimateAgeFromFacialScanInputSchema},
   output: {schema: EstimateAgeFromFacialScanOutputSchema},
   prompt: `You are an expert in age estimation from facial scans. You will estimate the age of a person based on their facial scan and compare it to their date of birth to ensure they meet age requirements for gambling.
 
@@ -63,11 +63,7 @@ const estimateAgeFromFacialScanFlow = ai.defineFlow(
     outputSchema: EstimateAgeFromFacialScanOutputSchema,
   },
   async input => {
-    const {estimatedAge, ageMatchesId, reviewRequired} = (await prompt(input)).output!;
-    return {
-      estimatedAge,
-      ageMatchesId,
-      reviewRequired,
-    };
+    const {output} = await prompt(input);
+    return output!;
   }
 );

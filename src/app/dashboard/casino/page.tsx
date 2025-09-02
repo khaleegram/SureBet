@@ -67,7 +67,7 @@ export default function CasinoPage() {
         {games.map(game => (
              <Card key={game.title} className="overflow-hidden group">
                 <CardHeader className="p-0 relative h-48">
-                    <Image src={game.image} data-ai-hint={game.aiHint} alt={game.title} layout="fill" objectFit="cover" className="group-hover:scale-105 transition-transform duration-300" />
+                    <Image src={game.image} data-ai-hint={game.aiHint} alt={game.title} fill objectFit="cover" className="group-hover:scale-105 transition-transform duration-300" />
                     {game.live && <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-0.5 rounded-md text-xs font-bold animate-pulse">LIVE</div>}
                 </CardHeader>
                 <CardContent className="p-6">
