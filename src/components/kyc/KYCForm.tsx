@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -11,9 +12,10 @@ import { Step4Processing } from './Step4Processing';
 import { Step5Result } from './Step5Result';
 
 import { comprehensiveVerificationCheck } from '@/ai/flows/compare-facial-embeddings';
-
+import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { fileToDataUri } from '@/lib/utils';
+import { FirebaseError } from 'firebase/app';
 
 type FormData = {
   personalInfo: any;
@@ -35,6 +37,7 @@ export function KYCForm() {
       email: '',
       phone: '',
       country: '',
+      password: '',
     },
     idDocument: null,
     faceScans: [],
@@ -42,6 +45,7 @@ export function KYCForm() {
   const [result, setResult] = useState<{ status: ResultStatus, messages: string[] } | null>(null);
   const { toast } = useToast();
   const router = useRouter();
+  const { signUp } = useAuth();
 
 
   const handlePersonalInfoNext = (data: any) => {
@@ -60,14 +64,15 @@ export function KYCForm() {
     setCurrentStep(4); // Show processing screen
 
     try {
-      // Convert files to data URIs
+      // --- Firebase Auth User Creation ---
+      await signUp(fullFormData.personalInfo.email, fullFormData.personalInfo.password);
+
+      // --- AI Verification Flow ---
       const idDataUri = await fileToDataUri(fullFormData.idDocument!);
       const faceScanDataUris = await Promise.all(
         fullFormData.faceScans.map(fileToDataUri)
       );
 
-      // --- Single, Comprehensive AI Flow ---
-      // This single call asks the AI to perform all checks and return a final verdict.
       const verificationResult = await comprehensiveVerificationCheck({
         idPhotoDataUri: idDataUri,
         livePhotoDataUris: faceScanDataUris,
@@ -83,21 +88,33 @@ export function KYCForm() {
       if (verificationResult.verificationStatus === 'success') {
          toast({
           title: "Verification Complete!",
-          description: "You will be redirected to the dashboard.",
+          description: "Welcome! You will be redirected to the dashboard.",
         });
         setTimeout(() => router.push('/dashboard'), 2000);
       }
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Verification process failed:', error);
+       let errorMessage = 'An unexpected system error occurred during verification.';
+       if (error instanceof FirebaseError) {
+        switch (error.code) {
+          case 'auth/email-already-in-use':
+            errorMessage = 'This email address is already in use by another account.';
+            break;
+          case 'auth/weak-password':
+            errorMessage = 'The password is too weak. Please use a stronger password.';
+            break;
+          default:
+            errorMessage = 'An error occurred during sign up. Please try again.';
+        }
+      }
       toast({
         variant: 'destructive',
         title: 'An Unexpected Error Occurred',
-        description: 'Please try again. If the problem persists, contact support.',
+        description: errorMessage,
       });
-      setResult({ status: 'failure', messages: ['An unexpected system error occurred during verification.'] });
+      setResult({ status: 'failure', messages: [errorMessage] });
     } finally {
-        // Move to the result step after processing
         setCurrentStep(5);
     }
   };

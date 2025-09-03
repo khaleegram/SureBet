@@ -1,9 +1,13 @@
+
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Dices, Gem, ShieldCheck, Swords, Users, Zap } from 'lucide-react';
+import { Dices, Gem, ShieldCheck, Swords, Users, Zap, LogIn } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Logo } from '@/components/Logo';
+import { useAuth } from '@/hooks/use-auth';
 
 const popularGames = [
     { 
@@ -30,6 +34,8 @@ const popularGames = [
 ];
 
 export default function Home() {
+  const { user, loading } = useAuth();
+  
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -40,11 +46,22 @@ export default function Home() {
               <Link href="/#features">Features</Link>
             </Button>
             <Button variant="ghost" asChild>
-              <Link href="/dashboard/casino">Games</Link>
+              <Link href={user ? "/dashboard/casino" : "/signin"}>Games</Link>
             </Button>
-            <Button asChild>
-              <Link href="/signup">Get Started</Link>
-            </Button>
+            {user ? (
+               <Button asChild>
+                  <Link href="/dashboard">Dashboard</Link>
+                </Button>
+            ) : (
+              <>
+                 <Button variant="ghost" asChild>
+                   <Link href="/signin">Sign In</Link>
+                 </Button>
+                 <Button asChild>
+                  <Link href="/signup">Get Started</Link>
+                </Button>
+              </>
+            )}
           </nav>
         </div>
       </header>
@@ -109,7 +126,7 @@ export default function Home() {
                                 <span className="text-lg font-bold">2.15</span>
                             </Button>
                         </div>
-                         <Button className="w-full mt-4">Place Bet</Button>
+                         <Button className="w-full mt-4" asChild><Link href={user ? "/dashboard/p2p-betting" : "/signin"}>Place Bet</Link></Button>
                     </CardContent>
                  </Card>
               </div>
@@ -128,7 +145,7 @@ export default function Home() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {popularGames.map(game => (
                          <Card key={game.title} className="overflow-hidden group relative">
-                            <Link href={game.href}>
+                            <Link href={user ? game.href : '/signin'}>
                                 <div className="absolute inset-0 bg-black/50 group-hover:bg-black/60 transition-colors z-10"></div>
                                 <Image src={game.image} data-ai-hint={game.aiHint} alt={game.title} layout="fill" objectFit="cover" className="group-hover:scale-105 transition-transform duration-300" />
                                 <CardHeader className="relative z-20">
