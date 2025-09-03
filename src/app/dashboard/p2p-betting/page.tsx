@@ -46,7 +46,7 @@ type Bet = {
     stakeCurrency: 'ETH' | 'ADA' | 'BTC' | 'USDT';
     createdBy: string;
     matchedBy?: string;
-    status: 'Open' | 'Matched' | 'Settled';
+    status: 'Open' | 'Matched' | 'Settling' | 'Settled';
     winner?: string; // 'creator' or 'matcher'
 };
 
@@ -79,22 +79,24 @@ export default function P2PBettingPage() {
         const betToMatch = openBets.find(b => b.id === betId);
         if (!betToMatch) return;
         
-        // Remove from open bets
         setOpenBets(prev => prev.filter(b => b.id !== betId));
 
-        // Add to my matched bets
         const matchedBet: Bet = { ...betToMatch, status: 'Matched', matchedBy: 'You' };
         setMyBets(prev => [...prev, matchedBet]);
 
         toast({ title: 'Bet Matched!', description: `You have accepted the bet on "${betToMatch.event}"` });
 
-        // Simulate outcome after a delay
-        setTimeout(() => simulateOutcome(betId), 5000);
+        // Change status to settling after a delay, triggering the useEffect
+        setTimeout(() => {
+            setMyBets(prev => prev.map(b => b.id === betId ? { ...b, status: 'Settling' } : b));
+        }, 5000);
     };
 
-    const simulateOutcome = (betId: string) => {
-        setMyBets(prev => prev.map(bet => {
-            if (bet.id === betId) {
+    useEffect(() => {
+        const betsToSettle = myBets.filter(bet => bet.status === 'Settling');
+
+        if (betsToSettle.length > 0) {
+            betsToSettle.forEach(bet => {
                 const winner = Math.random() > 0.5 ? 'creator' : 'matcher';
                 const didIWin = (bet.createdBy === 'You' && winner === 'creator') || (bet.matchedBy === 'You' && winner === 'matcher');
 
@@ -103,11 +105,12 @@ export default function P2PBettingPage() {
                     description: `You ${didIWin ? 'won' : 'lost'} ${bet.stake} ${bet.stakeCurrency}.`,
                     variant: didIWin ? 'default' : 'destructive',
                 });
-                return { ...bet, status: 'Settled', winner };
-            }
-            return bet;
-        }));
-    };
+
+                setMyBets(prev => prev.map(b => b.id === bet.id ? { ...b, status: 'Settled', winner } : b));
+            });
+        }
+    }, [myBets, toast]);
+
 
     const handleGenerateBets = async () => {
         setIsAiLoading(true);
@@ -244,7 +247,7 @@ export default function P2PBettingPage() {
                             <TableCell className="font-mono text-accent">{bet.odds.toFixed(2)}</TableCell>
                             <TableCell className="font-mono">{`${bet.stake} ${bet.stakeCurrency}`}</TableCell>
                             <TableCell className="text-right">
-                                <Badge variant={bet.status === 'Matched' ? 'secondary' : bet.status === 'Settled' ? 'default' : 'outline'}>
+                                <Badge variant={bet.status === 'Matched' || bet.status === 'Settling' ? 'secondary' : bet.status === 'Settled' ? 'default' : 'outline'}>
                                     {bet.status}
                                 </Badge>
                             </TableCell>
@@ -265,7 +268,7 @@ function CreateBetDialog({ onCreateBet }: { onCreateBet: (bet: Omit<Bet, 'id' | 
     const [event, setEvent] = useState('');
     const [market, setMarket] = useState('');
     const [odds, setOdds] = useState(1.01);
-    const [stake, setStake] = useState(10);
+    const [stake, setStake] = a useState(10);
     const [stakeCurrency, setStakeCurrency] = useState<'ETH' | 'ADA' | 'BTC' | 'USDT'>('USDT');
 
     const handleSubmit = () => {
@@ -316,3 +319,4 @@ function CreateBetDialog({ onCreateBet }: { onCreateBet: (bet: Omit<Bet, 'id' | 
         </Dialog>
     );
 }
+    
