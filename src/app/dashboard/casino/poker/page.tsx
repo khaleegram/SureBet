@@ -18,8 +18,8 @@ const PlayerCard = ({ name, balance, cards, isTurn, status }: { name: string; ba
        
         <p className="font-mono text-green-400">${balance.toLocaleString()}</p>
          <div className="flex gap-2 mt-2 h-24">
-            {cards ? cards.map(card => (
-                 <div key={card} className="w-16 h-24 rounded-md bg-white flex items-center justify-center relative overflow-hidden">
+            {cards ? cards.map((card, index) => (
+                 <div key={`${card}-${index}`} className="w-16 h-24 rounded-md bg-white flex items-center justify-center relative overflow-hidden">
                     <Image src={`/cards/${card}.svg`} alt={card} layout="fill" />
                  </div>
             )) : (
@@ -94,4 +94,3 @@ export default function PokerPage() {
         </div>
     );
 }
-
