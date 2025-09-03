@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { FirebaseError } from 'firebase/app';
 import { Loader2 } from 'lucide-react';
+import { getIdToken } from 'firebase/auth';
 
 const formSchema = z.object({
   email: z.string().email('Please enter a valid email.'),
@@ -25,7 +26,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function SigninPage() {
-  const { signIn } = useAuth();
+  const { signIn, user } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +42,18 @@ export default function SigninPage() {
   async function onSubmit(values: FormValues) {
     setIsLoading(true);
     try {
-      await signIn(values.email, values.password);
+      const userCredential = await signIn(values.email, values.password);
+      const idToken = await getIdToken(userCredential.user);
+
+      // Set session cookie
+      await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ idToken }),
+      });
+
       toast({
         title: 'Sign In Successful',
         description: "Welcome back! You're now logged in.",

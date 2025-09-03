@@ -8,7 +8,8 @@ import {
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
   signOut,
-  Auth
+  Auth,
+  UserCredential
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
@@ -18,7 +19,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   signUp: (email: string, password: string) => Promise<any>;
-  signIn: (email: string, password: string) => Promise<any>;
+  signIn: (email: string, password: string) => Promise<UserCredential>;
   signOutUser: () => Promise<void>;
 }
 
@@ -49,6 +50,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signOutUser = async () => {
     try {
       await signOut(auth);
+      // Remove session cookie
+      await fetch('/api/auth/session', { method: 'DELETE' });
       router.push('/');
       toast({ title: 'Signed Out', description: 'You have been successfully signed out.' });
     } catch (error: any) {
