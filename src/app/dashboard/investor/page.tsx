@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -22,8 +23,12 @@ import {
   ChartContainer,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { ShieldCheck, Globe, Users, TrendingUp } from 'lucide-react';
+import { ShieldCheck, Globe, Users, TrendingUp, Bot, Sparkles, Loader2 } from 'lucide-react';
 import type { ChartConfig } from '@/components/ui/chart';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import { generateInvestorReport, GenerateInvestorReportInput } from '@/ai/flows/generate-investor-report';
+import { Textarea } from '@/components/ui/textarea';
 
 
 const dailyActiveUsersData = [
@@ -41,6 +46,13 @@ const kycVerificationData = [
     { result: 'Manual Review', count: 120, fill: 'var(--color-review)' },
     { result: 'Failed', count: 30, fill: 'var(--color-failed)' },
 ]
+
+const kpiData = {
+    kycPassRate: '97.0%',
+    geoBlocksTriggered: '1,204',
+    dailyActiveUsers: '1,100',
+    grossGamingRevenue: '$1.2M',
+}
 
 const kycChartConfig = {
   count: {
@@ -69,6 +81,37 @@ const dauChartConfig = {
 
 
 export default function InvestorDashboardPage() {
+  const [report, setReport] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const handleGenerateReport = async () => {
+    setIsLoading(true);
+    setReport('');
+    try {
+        const input: GenerateInvestorReportInput = {
+            dailyActiveUsersData,
+            kycVerificationData,
+            kpiData
+        };
+        const aiReport = await generateInvestorReport(input);
+        setReport(aiReport);
+        toast({
+            title: "Report Generated",
+            description: "The AI-powered performance analysis is complete.",
+        });
+    } catch (error) {
+        console.error("Failed to generate report:", error);
+        toast({
+            variant: "destructive",
+            title: "Error Generating Report",
+            description: "The AI analyst is currently unavailable. Please try again later.",
+        });
+    } finally {
+        setIsLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div>
@@ -85,7 +128,7 @@ export default function InvestorDashboardPage() {
             <ShieldCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-400">97.0%</div>
+            <div className="text-2xl font-bold text-green-400">{kpiData.kycPassRate}</div>
             <p className="text-xs text-muted-foreground">
               (Auto-approved + Manual approval)
             </p>
@@ -99,7 +142,7 @@ export default function InvestorDashboardPage() {
             <Globe className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1,204</div>
+            <div className="text-2xl font-bold">{kpiData.geoBlocksTriggered}</div>
             <p className="text-xs text-muted-foreground">
               In the last 24 hours
             </p>
@@ -111,7 +154,7 @@ export default function InvestorDashboardPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1,100</div>
+            <div className="text-2xl font-bold">{kpiData.dailyActiveUsers}</div>
             <p className="text-xs text-muted-foreground">
               +12% from yesterday
             </p>
@@ -125,13 +168,48 @@ export default function InvestorDashboardPage() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$1.2M</div>
+            <div className="text-2xl font-bold">{kpiData.grossGamingRevenue}</div>
             <p className="text-xs text-muted-foreground">
               (Last 30 days)
             </p>
           </CardContent>
         </Card>
       </div>
+
+       <Card>
+        <CardHeader>
+          <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+             <div>
+                <CardTitle className="flex items-center gap-2"><Bot/> AI Analyst Report</CardTitle>
+                <CardDescription>Generate a performance summary using the data from this dashboard.</CardDescription>
+             </div>
+             <Button onClick={handleGenerateReport} disabled={isLoading}>
+                {isLoading ? <Loader2 className="mr-2 animate-spin"/> : <Sparkles className="mr-2"/>}
+                {isLoading ? 'Analyzing...' : 'Generate Weekly Report'}
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+            {isLoading && (
+                <div className="flex items-center justify-center h-40">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+            )}
+            {report && (
+                 <Textarea 
+                    value={report}
+                    readOnly
+                    className="w-full h-96 font-mono text-sm bg-background/50"
+                 />
+            )}
+            {!isLoading && !report && (
+                <div className="text-center text-muted-foreground py-10">
+                    Click the button to generate your AI-powered weekly performance report.
+                </div>
+            )}
+        </CardContent>
+      </Card>
+
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
@@ -155,7 +233,7 @@ export default function InvestorDashboardPage() {
             <CardHeader>
                 <CardTitle>KYC Verification Funnel</CardTitle>
                 <CardDescription>Breakdown of user verification outcomes.</CardDescription>
-            </CardHeader>
+            </Header>
             <CardContent>
                 <ChartContainer config={kycChartConfig} className="h-[250px] w-full">
                   <BarChart data={kycVerificationData} layout="vertical" margin={{ left: 10 }}>

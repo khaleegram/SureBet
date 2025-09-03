@@ -1,3 +1,4 @@
+'use server';
 import { config } from 'dotenv';
 config();
 
@@ -6,3 +7,4 @@ config();
 import '@/ai/flows/compare-facial-embeddings.ts';
 // The following flow is no longer used individually.
 // import '@/ai/flows/estimate-age-from-facial-scan.ts';
+import '@/ai/flows/generate-investor-report.ts';
