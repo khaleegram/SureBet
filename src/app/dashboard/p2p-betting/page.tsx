@@ -268,7 +268,7 @@ function CreateBetDialog({ onCreateBet }: { onCreateBet: (bet: Omit<Bet, 'id' | 
     const [event, setEvent] = useState('');
     const [market, setMarket] = useState('');
     const [odds, setOdds] = useState(1.01);
-    const [stake, setStake] = a useState(10);
+    const [stake, setStake] = useState(10);
     const [stakeCurrency, setStakeCurrency] = useState<'ETH' | 'ADA' | 'BTC' | 'USDT'>('USDT');
 
     const handleSubmit = () => {
