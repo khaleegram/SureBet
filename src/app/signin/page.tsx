@@ -46,7 +46,7 @@ export default function SigninPage() {
       const idToken = await getIdToken(userCredential.user);
 
       // Set session cookie
-      await fetch('/api/auth/session', {
+      const response = await fetch('/api/auth/session', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -54,11 +54,16 @@ export default function SigninPage() {
         body: JSON.stringify({ idToken }),
       });
 
+      if (!response.ok) {
+        throw new Error('Failed to create session.');
+      }
+
       toast({
         title: 'Sign In Successful',
         description: "Welcome back! You're now logged in.",
       });
       router.push('/dashboard');
+      router.refresh(); // Force a refresh to ensure middleware is re-evaluated with the new cookie
     } catch (error: any) {
       let errorMessage = 'An unexpected error occurred. Please try again.';
       if (error instanceof FirebaseError) {
