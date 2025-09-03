@@ -28,7 +28,15 @@ interface Step1PersonalInfoProps {
 export function Step1PersonalInfo({ onNext, defaultValues }: Step1PersonalInfoProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues,
+    defaultValues: {
+      fullName: '',
+      dateOfBirth: '',
+      address: '',
+      email: '',
+      phone: '',
+      country: '',
+      ...defaultValues,
+    },
   });
 
   function onSubmit(values: FormValues) {
