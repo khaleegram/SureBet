@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/card';
 import { ArrowRight, Dices, Swords } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const games = [
     { 
@@ -17,6 +18,7 @@ const games = [
         image: 'https://picsum.photos/600/400?random=1',
         aiHint: 'casino slot machine',
         live: false,
+        href: '/dashboard/casino/slots'
     },
     { 
         title: 'Poker', 
@@ -24,6 +26,7 @@ const games = [
         image: 'https://picsum.photos/600/400?random=2',
         aiHint: 'poker cards',
         live: true,
+        href: '/dashboard/casino/poker'
     },
     { 
         title: 'Roulette', 
@@ -31,6 +34,7 @@ const games = [
         image: 'https://picsum.photos/600/400?random=3',
         aiHint: 'casino roulette wheel',
         live: true,
+        href: '/dashboard/casino'
     },
     { 
         title: 'Blackjack', 
@@ -38,6 +42,7 @@ const games = [
         image: 'https://picsum.photos/600/400?random=4',
         aiHint: 'blackjack cards',
         live: false,
+        href: '/dashboard/casino/blackjack'
     },
      { 
         title: 'Baccarat', 
@@ -45,6 +50,7 @@ const games = [
         image: 'https://picsum.photos/600/400?random=5',
         aiHint: 'baccarat table',
         live: false,
+        href: '/dashboard/casino'
     },
      { 
         title: 'Live Sports Betting', 
@@ -52,6 +58,7 @@ const games = [
         image: 'https://picsum.photos/600/400?random=6',
         aiHint: 'stadium lights',
         live: true,
+        href: '/dashboard/sports-betting'
     },
 ]
 
@@ -66,23 +73,25 @@ export default function CasinoPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {games.map(game => (
              <Card key={game.title} className="overflow-hidden group">
-                <CardHeader className="p-0 relative h-48">
-                    <Image src={game.image} data-ai-hint={game.aiHint} alt={game.title} fill objectFit="cover" className="group-hover:scale-105 transition-transform duration-300" />
-                    {game.live && <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-0.5 rounded-md text-xs font-bold animate-pulse">LIVE</div>}
-                </CardHeader>
-                <CardContent className="p-6">
-                    <CardTitle className="font-headline flex items-center gap-2">
-                        {game.title === 'Live Sports Betting' ? <Swords/> : <Dices/>}
-                        {game.title}
-                    </CardTitle>
-                    <CardDescription className="mt-2">{game.description}</CardDescription>
-                </CardContent>
-                <CardFooter>
-                    <Button className="w-full">
-                        Play Now
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                </CardFooter>
+                <Link href={game.href} className="block h-full flex flex-col">
+                    <CardHeader className="p-0 relative h-48">
+                        <Image src={game.image} data-ai-hint={game.aiHint} alt={game.title} fill objectFit="cover" className="group-hover:scale-105 transition-transform duration-300" />
+                        {game.live && <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-0.5 rounded-md text-xs font-bold animate-pulse">LIVE</div>}
+                    </CardHeader>
+                    <CardContent className="p-6 flex-grow">
+                        <CardTitle className="font-headline flex items-center gap-2">
+                            {game.title === 'Live Sports Betting' ? <Swords/> : <Dices/>}
+                            {game.title}
+                        </CardTitle>
+                        <CardDescription className="mt-2">{game.description}</CardDescription>
+                    </CardContent>
+                    <CardFooter>
+                        <Button className="w-full">
+                            Play Now
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                    </CardFooter>
+                </Link>
              </Card>
         ))}
       </div>
