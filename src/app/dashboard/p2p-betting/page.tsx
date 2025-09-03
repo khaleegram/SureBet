@@ -1,3 +1,6 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -15,24 +18,121 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { PlusCircle, Swords, Zap } from 'lucide-react';
+import { PlusCircle, Swords, Zap, Bot, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { generateP2pBetScenarios } from '@/ai/flows/generate-p2p-bet-scenarios';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
-const openBets = [
-    { event: 'MMA Fight Night: Titan vs. Goliath', market: 'Winner', odds: '1.85', stake: '0.1 ETH', by: 'UserA' },
-    { event: 'E-Sports Finals: CyberDragons vs. QuantumLeap', market: 'Map 3 Winner', odds: '2.50', stake: '500 ADA', by: 'UserB' },
-    { event: 'Crypto Price Prediction: BTC > $75k by EOD', market: 'Yes', odds: '1.50', stake: '0.05 BTC', by: 'UserC' },
-    { event: 'Presidential Election 2024', market: 'Candidate Z Wins', odds: '3.20', stake: '1,000 USDT', by: 'UserD' },
+
+type Bet = {
+    id: string;
+    event: string;
+    market: string;
+    odds: number;
+    stake: number;
+    stakeCurrency: 'ETH' | 'ADA' | 'BTC' | 'USDT';
+    createdBy: string;
+    matchedBy?: string;
+    status: 'Open' | 'Matched' | 'Settled';
+    winner?: string; // 'creator' or 'matcher'
+};
+
+const initialOpenBets: Bet[] = [
+    { id: 'ob1', event: 'MMA Fight Night: Titan vs. Goliath', market: 'Goliath to Win', odds: 1.85, stake: 0.1, stakeCurrency: 'ETH', createdBy: 'UserA', status: 'Open' },
+    { id: 'ob2', event: 'E-Sports Finals: CyberDragons vs. QuantumLeap', market: 'Map 3 Winner: CyberDragons', odds: 2.50, stake: 500, stakeCurrency: 'ADA', createdBy: 'UserB', status: 'Open' },
+    { id: 'ob3', event: 'Crypto Price Prediction: BTC > $75k by EOD', market: 'Yes', odds: 1.50, stake: 0.05, stakeCurrency: 'BTC', createdBy: 'UserC', status: 'Open' },
+    { id: 'ob4', event: 'Presidential Election 2024', market: 'Candidate Z Wins', odds: 3.20, stake: 1000, stakeCurrency: 'USDT', createdBy: 'UserD', status: 'Open' },
 ]
-
-const myBets = [
-    { event: 'MMA Fight Night: Titan vs. Goliath', market: 'Goliath Wins', odds: '1.85', stake: '0.1 ETH', status: 'Matched' },
-    { event: 'E-Sports Finals: CyberDragons vs. QuantumLeap', market: 'QuantumLeap Wins', odds: '2.10', stake: '250 ADA', status: 'Open' },
-]
-
 
 export default function P2PBettingPage() {
+    const { toast } = useToast();
+    const [openBets, setOpenBets] = useState<Bet[]>(initialOpenBets);
+    const [myBets, setMyBets] = useState<Bet[]>([]);
+    const [isAiLoading, setIsAiLoading] = useState(false);
+
+    const handleCreateBet = (newBet: Omit<Bet, 'id' | 'createdBy' | 'status'>) => {
+        const betToAdd: Bet = {
+            ...newBet,
+            id: `bet_${Date.now()}`,
+            createdBy: 'You',
+            status: 'Open',
+        };
+        setMyBets(prev => [...prev, betToAdd]);
+        setOpenBets(prev => [betToAdd, ...prev]);
+        toast({ title: 'Bet Created!', description: 'Your bet is now listed on the marketplace.' });
+    };
+
+    const handleMatchBet = (betId: string) => {
+        const betToMatch = openBets.find(b => b.id === betId);
+        if (!betToMatch) return;
+        
+        // Remove from open bets
+        setOpenBets(prev => prev.filter(b => b.id !== betId));
+
+        // Add to my matched bets
+        const matchedBet: Bet = { ...betToMatch, status: 'Matched', matchedBy: 'You' };
+        setMyBets(prev => [...prev, matchedBet]);
+
+        toast({ title: 'Bet Matched!', description: `You have accepted the bet on "${betToMatch.event}"` });
+
+        // Simulate outcome after a delay
+        setTimeout(() => simulateOutcome(betId), 5000);
+    };
+
+    const simulateOutcome = (betId: string) => {
+        setMyBets(prev => prev.map(bet => {
+            if (bet.id === betId) {
+                const winner = Math.random() > 0.5 ? 'creator' : 'matcher';
+                const didIWin = (bet.createdBy === 'You' && winner === 'creator') || (bet.matchedBy === 'You' && winner === 'matcher');
+
+                toast({
+                    title: `Bet Settled: ${bet.event}`,
+                    description: `You ${didIWin ? 'won' : 'lost'} ${bet.stake} ${bet.stakeCurrency}.`,
+                    variant: didIWin ? 'default' : 'destructive',
+                });
+                return { ...bet, status: 'Settled', winner };
+            }
+            return bet;
+        }));
+    };
+
+    const handleGenerateBets = async () => {
+        setIsAiLoading(true);
+        try {
+            const result = await generateP2pBetScenarios({ category: 'Any', count: 3 });
+            const newBets: Bet[] = result.scenarios.map((scenario, i) => ({
+                id: `ai_${Date.now()}_${i}`,
+                event: scenario.event,
+                market: scenario.market,
+                odds: scenario.odds,
+                stake: Math.floor(Math.random() * 100) + 10,
+                stakeCurrency: 'USDT',
+                createdBy: 'AI_Oddsmaker',
+                status: 'Open'
+            }));
+            setOpenBets(prev => [...newBets, ...prev]);
+            toast({ title: 'AI Bets Generated', description: 'New betting opportunities have been added to the marketplace.' });
+        } catch (error) {
+            toast({ title: 'Error', description: 'Could not generate AI bets.', variant: 'destructive' });
+        } finally {
+            setIsAiLoading(false);
+        }
+    }
+
+
   return (
     <div className="space-y-8">
        <div>
@@ -40,7 +140,7 @@ export default function P2PBettingPage() {
         <p className="text-muted-foreground">Create your own odds or accept bets from others.</p>
       </div>
 
-      <Card>
+       <Card>
         <CardHeader>
             <div className="flex justify-between items-center">
                 <CardTitle>Featured Event</CardTitle>
@@ -75,22 +175,25 @@ export default function P2PBettingPage() {
 
       <Card>
         <CardHeader>
-            <div className="flex justify-between items-start">
+            <div className="flex justify-between items-start gap-4">
                 <div>
                     <CardTitle>Betting Exchange</CardTitle>
                     <CardDescription>Browse open bets or check on your own.</CardDescription>
                 </div>
-                <Button>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Create Bet
-                </Button>
+                <div className="flex gap-2">
+                    <Button variant="outline" onClick={handleGenerateBets} disabled={isAiLoading}>
+                        {isAiLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Bot className="mr-2 h-4 w-4" />}
+                        Suggest Bets
+                    </Button>
+                    <CreateBetDialog onCreateBet={handleCreateBet} />
+                </div>
             </div>
         </CardHeader>
         <CardContent>
            <Tabs defaultValue="open-bets">
              <TabsList>
-               <TabsTrigger value="open-bets">Open Bets</TabsTrigger>
-               <TabsTrigger value="my-bets">My Bets</TabsTrigger>
+               <TabsTrigger value="open-bets">Open Bets ({openBets.length})</TabsTrigger>
+               <TabsTrigger value="my-bets">My Bets ({myBets.length})</TabsTrigger>
              </TabsList>
              <TabsContent value="open-bets" className="mt-4">
                <Table>
@@ -100,18 +203,22 @@ export default function P2PBettingPage() {
                      <TableHead>Market</TableHead>
                      <TableHead>Odds</TableHead>
                      <TableHead>Stake</TableHead>
+                     <TableHead>Created By</TableHead>
                      <TableHead className="text-right">Action</TableHead>
                    </TableRow>
                  </TableHeader>
                  <TableBody>
-                    {openBets.map((bet, i) => (
-                        <TableRow key={i}>
+                    {openBets.map((bet) => (
+                        <TableRow key={bet.id}>
                             <TableCell className="font-medium flex items-center gap-2"><Swords className="h-4 w-4 text-primary" /> {bet.event}</TableCell>
                             <TableCell>{bet.market}</TableCell>
-                            <TableCell className="font-mono text-accent">{bet.odds}</TableCell>
-                            <TableCell className="font-mono">{bet.stake}</TableCell>
+                            <TableCell className="font-mono text-accent">{bet.odds.toFixed(2)}</TableCell>
+                            <TableCell className="font-mono">{`${bet.stake} ${bet.stakeCurrency}`}</TableCell>
+                             <TableCell>{bet.createdBy}</TableCell>
                             <TableCell className="text-right">
-                                <Button size="sm">Match Bet</Button>
+                                <Button size="sm" onClick={() => handleMatchBet(bet.id)} disabled={bet.createdBy === 'You'}>
+                                    Match Bet
+                                </Button>
                             </TableCell>
                         </TableRow>
                     ))}
@@ -123,21 +230,23 @@ export default function P2PBettingPage() {
                  <TableHeader>
                    <TableRow>
                      <TableHead>Event</TableHead>
-                     <TableHead>Market</TableHead>
+                     <TableHead>Your Position</TableHead>
                      <TableHead>Odds</TableHead>
                      <TableHead>Stake</TableHead>
                      <TableHead className="text-right">Status</TableHead>
                    </TableRow>
                  </TableHeader>
                  <TableBody>
-                    {myBets.map((bet, i) => (
-                        <TableRow key={i}>
+                    {myBets.map((bet) => (
+                        <TableRow key={bet.id}>
                             <TableCell className="font-medium">{bet.event}</TableCell>
                             <TableCell>{bet.market}</TableCell>
-                            <TableCell className="font-mono text-accent">{bet.odds}</TableCell>
-                            <TableCell className="font-mono">{bet.stake}</TableCell>
+                            <TableCell className="font-mono text-accent">{bet.odds.toFixed(2)}</TableCell>
+                            <TableCell className="font-mono">{`${bet.stake} ${bet.stakeCurrency}`}</TableCell>
                             <TableCell className="text-right">
-                                <span className={`text-sm font-semibold ${bet.status === 'Matched' ? 'text-green-400' : 'text-yellow-400'}`}>{bet.status}</span>
+                                <Badge variant={bet.status === 'Matched' ? 'secondary' : bet.status === 'Settled' ? 'default' : 'outline'}>
+                                    {bet.status}
+                                </Badge>
                             </TableCell>
                         </TableRow>
                     ))}
@@ -149,4 +258,61 @@ export default function P2PBettingPage() {
       </Card>
     </div>
   );
+}
+
+
+function CreateBetDialog({ onCreateBet }: { onCreateBet: (bet: Omit<Bet, 'id' | 'createdBy' | 'status'>) => void }) {
+    const [event, setEvent] = useState('');
+    const [market, setMarket] = useState('');
+    const [odds, setOdds] = useState(1.01);
+    const [stake, setStake] = useState(10);
+    const [stakeCurrency, setStakeCurrency] = useState<'ETH' | 'ADA' | 'BTC' | 'USDT'>('USDT');
+
+    const handleSubmit = () => {
+        if (event && market && odds > 1 && stake > 0) {
+            onCreateBet({ event, market, odds, stake, stakeCurrency });
+        }
+    };
+
+    return (
+        <Dialog>
+            <DialogTrigger asChild>
+                <Button>
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Create Bet
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                    <DialogTitle>Create a New Bet</DialogTitle>
+                    <DialogDescription>
+                        Set the terms for your bet and post it to the marketplace.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="event" className="text-right">Event</Label>
+                        <Input id="event" value={event} onChange={e => setEvent(e.target.value)} className="col-span-3" placeholder="e.g., MMA Fight Night: ..." />
+                    </div>
+                     <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="market" className="text-right">Market</Label>
+                        <Input id="market" value={market} onChange={e => setMarket(e.target.value)} className="col-span-3" placeholder="e.g., Titan to Win" />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="odds" className="text-right">Odds</Label>
+                        <Input id="odds" type="number" value={odds} onChange={e => setOdds(parseFloat(e.target.value))} className="col-span-3" step="0.01" min="1.01" />
+                    </div>
+                     <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="stake" className="text-right">Stake</Label>
+                        <Input id="stake" type="number" value={stake} onChange={e => setStake(parseFloat(e.target.value))} className="col-span-3" min="1" />
+                    </div>
+                </div>
+                <DialogFooter>
+                    <DialogClose asChild>
+                        <Button type="submit" onClick={handleSubmit}>Post Bet to Marketplace</Button>
+                    </DialogClose>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
 }
