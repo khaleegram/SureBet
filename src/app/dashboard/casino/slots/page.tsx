@@ -7,13 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Gem, Cherry, BarChart, DollarSign, Crown } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const symbols = [
-  { icon: Gem, color: 'text-blue-400' },
-  { icon: Cherry, color: 'text-red-500' },
-  { icon: BarChart, color: 'text-yellow-400' },
-  { icon: DollarSign, color: 'text-green-500' },
-  { icon: Crown, color: 'text-purple-500' },
+  { icon: Gem, color: 'text-blue-400', name: 'Gem', payout: { two: 2, three: 20 } },
+  { icon: Cherry, color: 'text-red-500', name: 'Cherry', payout: { two: 3, three: 30 } },
+  { icon: BarChart, color: 'text-yellow-400', name: 'Bar', payout: { two: 5, three: 50 } },
+  { icon: DollarSign, color: 'text-green-500', name: 'Dollar', payout: { two: 10, three: 100 } },
+  { icon: Crown, color: 'text-purple-500', name: 'Crown', payout: { two: 20, three: 250 } },
 ];
 
 export default function SlotsPage() {
@@ -21,12 +22,18 @@ export default function SlotsPage() {
   const [spinning, setSpinning] = useState(false);
   const [balance, setBalance] = useState(1000);
   const [betAmount, setBetAmount] = useState(10);
+  const { toast } = useToast();
 
   const spin = () => {
     if (balance < betAmount) {
-      // toast notification here
+      toast({ variant: 'destructive', title: 'Insufficient Funds', description: 'You do not have enough balance to place that bet.' });
       return;
     }
+     if (betAmount <= 0) {
+      toast({ variant: 'destructive', title: 'Invalid Bet', description: 'Bet amount must be greater than zero.' });
+      return;
+    }
+
 
     setSpinning(true);
     setBalance(balance - betAmount);
@@ -48,10 +55,26 @@ export default function SlotsPage() {
       ];
       setReels(newReels);
       setSpinning(false);
+      
       // Payout logic
-      if (newReels[0] === newReels[1] && newReels[1] === newReels[2]) {
-        setBalance(balance + betAmount * 10);
+      let winAmount = 0;
+      let winTitle = '';
+
+      if (newReels[0].name === newReels[1].name && newReels[1].name === newReels[2].name) {
+        winAmount = betAmount * newReels[0].payout.three;
+        winTitle = `Jackpot! Three ${newReels[0].name}s!`;
+      } else if (newReels[0].name === newReels[1].name) {
+        winAmount = betAmount * newReels[0].payout.two;
+        winTitle = `Winner! Two ${newReels[0].name}s!`;
       }
+      
+      if (winAmount > 0) {
+        setBalance(prev => prev + winAmount);
+        toast({ title: winTitle, description: `You won $${winAmount.toFixed(2)}!` });
+      } else {
+        toast({ title: 'No Luck!', description: 'Try again.' });
+      }
+
     }, 2000);
   };
 
@@ -65,9 +88,11 @@ export default function SlotsPage() {
       <Card className="w-full max-w-md bg-card/50 backdrop-blur-sm">
         <CardContent className="p-6">
           <div className="bg-background/50 rounded-lg p-4 mb-6">
-             <div className="flex justify-around items-center h-40 border-2 border-primary/20 rounded-lg bg-black/20">
+             <div className="flex justify-around items-center h-40 border-2 border-primary/20 rounded-lg bg-black/20 overflow-hidden">
               {reels.map((S, index) => (
-                <S.icon key={index} className={`w-20 h-20 ${S.color} ${spinning ? 'animate-spin' : ''}`} />
+                <div key={index} className="w-1/3 h-full flex items-center justify-center">
+                    <S.icon className={`w-20 h-20 ${S.color} ${spinning ? 'animate-spin' : ''}`} />
+                </div>
               ))}
             </div>
           </div>
@@ -81,6 +106,7 @@ export default function SlotsPage() {
                 value={betAmount}
                 onChange={(e) => setBetAmount(Number(e.target.value))}
                 className="text-lg font-bold"
+                min="1"
               />
             </div>
             <Button onClick={spin} disabled={spinning} className="w-full h-16 text-2xl font-bold">
@@ -107,3 +133,5 @@ export default function SlotsPage() {
     </div>
   );
 }
+
+    

@@ -6,14 +6,54 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
+import { useToast } from '@/hooks/use-toast';
 
-const Hand = ({ title, cards, score }: { title: string; cards: {card: string, hidden?: boolean}[]; score: number; }) => (
+type CardType = {
+    suit: 'H' | 'D' | 'C' | 'S';
+    value: 'A' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | '10' | 'J' | 'Q' | 'K';
+};
+
+type HandCard = {
+    card: CardType;
+    hidden?: boolean;
+};
+
+const suits: CardType['suit'][] = ['H', 'D', 'C', 'S'];
+const values: CardType['value'][] = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+
+const createDeck = (): CardType[] => {
+    return suits.flatMap(suit => values.map(value => ({ suit, value })));
+};
+
+const shuffleDeck = (deck: CardType[]): CardType[] => {
+    return deck.sort(() => Math.random() - 0.5);
+};
+
+const getCardValue = (card: CardType): number => {
+    if (['J', 'Q', 'K'].includes(card.value)) return 10;
+    if (card.value === 'A') return 11;
+    return parseInt(card.value);
+};
+
+const calculateScore = (hand: HandCard[]): number => {
+    let score = hand.reduce((acc, handCard) => acc + (handCard.hidden ? 0 : getCardValue(handCard.card)), 0);
+    let numAces = hand.filter(handCard => !handCard.hidden && handCard.card.value === 'A').length;
+
+    while (score > 21 && numAces > 0) {
+        score -= 10;
+        numAces--;
+    }
+    return score;
+};
+
+
+const Hand = ({ title, cards, score }: { title: string; cards: HandCard[]; score: number; }) => (
     <div>
         <h3 className="text-xl font-bold text-center mb-2">{title}</h3>
         <div className="flex justify-center items-center gap-4 min-h-[160px]">
             {cards.map(({card, hidden}, index) => (
                 <div key={index} className="w-28 h-40 rounded-lg bg-white relative overflow-hidden shadow-lg transition-transform hover:scale-105">
-                     <Image src={`/cards/${hidden ? 'back' : card}.svg`} alt={card} layout="fill" />
+                     <Image src={`/cards/${hidden ? 'back' : `${card.value}${card.suit}`}.svg`} alt={hidden ? 'Card Back' : `${card.value} of ${card.suit}`} layout="fill" />
                 </div>
             ))}
         </div>
@@ -26,36 +66,110 @@ const Hand = ({ title, cards, score }: { title: string; cards: {card: string, hi
 
 
 export default function BlackjackPage() {
-  const [playerHand, setPlayerHand] = useState([{card: 'AS'}, {card: '8D'}]);
-  const [dealerHand, setDealerHand] = useState([{card: '7C'}, {card: 'back', hidden: true}]);
-  const [playerScore, setPlayerScore] = useState(19);
-  const [dealerScore, setDealerScore] = useState(7);
+  const [deck, setDeck] = useState<CardType[]>([]);
+  const [playerHand, setPlayerHand] = useState<HandCard[]>([]);
+  const [dealerHand, setDealerHand] = useState<HandCard[]>([]);
+  const [playerScore, setPlayerScore] = useState(0);
+  const [dealerScore, setDealerScore] = useState(0);
   const [bet, setBet] = useState(50);
-  const [balance, setBalance] = useState(950);
-  const [gameState, setGameState] = useState('player-turn'); // player-turn, dealer-turn, finished
+  const [balance, setBalance] = useState(1000);
+  const [gameState, setGameState] = useState<'betting' | 'player-turn' | 'dealer-turn' | 'finished'>('betting');
+  const [resultMessage, setResultMessage] = useState('');
+  const { toast } = useToast();
+
+  const startNewGame = () => {
+    if (balance < bet) {
+        toast({ title: "Not enough balance to bet", variant: 'destructive' });
+        return;
+    }
+
+    setBalance(prev => prev - bet);
+    const newDeck = shuffleDeck(createDeck());
+
+    const playerInitialHand = [{ card: newDeck.pop()! }, { card: newDeck.pop()! }];
+    const dealerInitialHand = [{ card: newDeck.pop()! }, { card: newDeck.pop()!, hidden: true }];
+    
+    setDeck(newDeck);
+    setPlayerHand(playerInitialHand);
+    setDealerHand(dealerInitialHand);
+    setPlayerScore(calculateScore(playerInitialHand));
+    setDealerScore(calculateScore(dealerInitialHand));
+    setGameState('player-turn');
+    setResultMessage('');
+  };
+  
+  useEffect(() => {
+    if (playerScore === 21 && playerHand.length === 2) {
+      // Blackjack!
+      setTimeout(finishGame, 500);
+    }
+  }, [playerScore, playerHand]);
+
 
   const handleHit = () => {
-    // This is where you'd have real deck logic
-    // For now, simple random card
-    setPlayerHand([...playerHand, {card: '3H'}])
-    setPlayerScore(22);
+    if (gameState !== 'player-turn' || !deck.length) return;
+    const newDeck = [...deck];
+    const newPlayerHand = [...playerHand, { card: newDeck.pop()! }];
+    const newPlayerScore = calculateScore(newPlayerHand);
+    
+    setDeck(newDeck);
+    setPlayerHand(newPlayerHand);
+    setPlayerScore(newPlayerScore);
+
+    if (newPlayerScore > 21) {
+      setResultMessage('Player Busts! Dealer Wins.');
+      setGameState('finished');
+    }
+  };
+
+  const handleStand = () => {
+    setGameState('dealer-turn');
+  };
+
+  useEffect(() => {
+    if (gameState === 'dealer-turn') {
+      let currentDealerHand = dealerHand.map(h => ({...h, hidden: false}));
+      let currentDealerScore = calculateScore(currentDealerHand);
+      let currentDeck = [...deck];
+
+      while (currentDealerScore < 17 && currentDeck.length > 0) {
+        currentDealerHand.push({ card: currentDeck.pop()! });
+        currentDealerScore = calculateScore(currentDealerHand);
+      }
+      
+      setDealerHand(currentDealerHand);
+      setDealerScore(currentDealerScore);
+      setDeck(currentDeck);
+      finishGame(currentDealerScore);
+    }
+  }, [gameState]);
+
+
+  const finishGame = (finalDealerScore?: number) => {
+    const pScore = calculateScore(playerHand);
+    const dScore = finalDealerScore ?? calculateScore(dealerHand.map(h => ({...h, hidden: false})));
+
+    if (pScore > 21) {
+      setResultMessage('Player Busts! Dealer Wins.');
+    } else if (dScore > 21) {
+      setResultMessage('Dealer Busts! You Win!');
+      setBalance(prev => prev + bet * 2);
+    } else if (pScore === 21 && playerHand.length === 2) {
+      setResultMessage('Blackjack! You Win!');
+      setBalance(prev => prev + bet * 2.5);
+    }
+    else if (pScore > dScore) {
+      setResultMessage('You Win!');
+      setBalance(prev => prev + bet * 2);
+    } else if (dScore > pScore) {
+      setResultMessage('Dealer Wins.');
+    } else {
+      setResultMessage('Push! It\'s a tie.');
+      setBalance(prev => prev + bet);
+    }
     setGameState('finished');
   }
 
-  const handleStand = () => {
-     setDealerHand([{card: '7C'}, {card: 'KS'}]);
-     setDealerScore(17);
-     setGameState('finished');
-  }
-
-  const handleNewGame = () => {
-    setPlayerHand([{card: 'AC'}, {card: 'JS'}]);
-    setDealerHand([{card: 'KH'}, {card: 'back', hidden: true}]);
-    setPlayerScore(21);
-    setDealerScore(10);
-    setGameState('player-turn');
-    setBalance(balance - bet + 100);
-  }
 
   return (
     <div className="flex flex-col items-center justify-center p-4">
@@ -64,18 +178,30 @@ export default function BlackjackPage() {
 
         <Card className="w-full max-w-4xl bg-green-900/40 border-green-700 p-6">
             <CardContent>
-                <Hand title="Dealer's Hand" cards={dealerHand} score={gameState === 'player-turn' ? dealerScore : 17} />
+                <Hand title="Dealer's Hand" cards={dealerHand} score={gameState === 'player-turn' ? dealerScore : calculateScore(dealerHand.map(c => ({...c, hidden: false})))} />
 
                 <div className="my-8 text-center">
                     {gameState === 'finished' && (
                         <div className="flex flex-col items-center gap-2 mb-4">
                            <p className="text-3xl font-bold text-amber-300">
-                                {playerScore > 21 ? 'Player Busts!' : playerScore > (dealerScore > 21 ? 0 : 17) ? 'You Win!' : 'Dealer Wins!'}
+                                {resultMessage}
                            </p>
-                            <Button onClick={handleNewGame}>Play Again</Button>
+                            <Button onClick={() => setGameState('betting')}>Play Again</Button>
                         </div>
                     )}
-                    <Badge variant="secondary" className="text-lg">Bet: ${bet}</Badge>
+                    {gameState === 'betting' && (
+                        <div className="flex flex-col items-center gap-4">
+                             <p className="text-xl font-bold text-white">Place Your Bet</p>
+                             {/* Simple bet buttons for now */}
+                             <div className="flex gap-2">
+                                <Button variant={bet === 25 ? 'secondary' : 'outline'} onClick={() => setBet(25)}>$25</Button>
+                                <Button variant={bet === 50 ? 'secondary' : 'outline'} onClick={() => setBet(50)}>$50</Button>
+                                <Button variant={bet === 100 ? 'secondary' : 'outline'} onClick={() => setBet(100)}>$100</Button>
+                             </div>
+                             <Button onClick={startNewGame}>Deal Cards</Button>
+                        </div>
+                    )}
+                     {gameState !== 'betting' && <Badge variant="secondary" className="text-lg">Bet: ${bet}</Badge>}
                 </div>
                 
                 <Hand title="Your Hand" cards={playerHand} score={playerScore} />
@@ -91,11 +217,11 @@ export default function BlackjackPage() {
                 <div className="flex gap-4">
                     <Button size="lg" onClick={handleHit} disabled={gameState !== 'player-turn'}>Hit</Button>
                     <Button size="lg" onClick={handleStand} disabled={gameState !== 'player-turn'}>Stand</Button>
-                    <Button size="lg" variant="secondary" disabled={gameState !== 'player-turn'}>Double Down</Button>
                 </div>
             </CardContent>
         </Card>
-
     </div>
   );
 }
+
+    
