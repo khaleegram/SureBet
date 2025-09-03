@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
+import { useBalance } from '@/hooks/use-balance';
 
 type CardType = {
     suit: 'H' | 'D' | 'C' | 'S';
@@ -72,18 +73,17 @@ export default function BlackjackPage() {
   const [playerScore, setPlayerScore] = useState(0);
   const [dealerScore, setDealerScore] = useState(0);
   const [bet, setBet] = useState(50);
-  const [balance, setBalance] = useState(1000);
+  const { balance, addToBalance, subtractFromBalance } = useBalance();
   const [gameState, setGameState] = useState<'betting' | 'player-turn' | 'dealer-turn' | 'finished'>('betting');
   const [resultMessage, setResultMessage] = useState('');
   const { toast } = useToast();
 
   const startNewGame = () => {
-    if (balance < bet) {
+    if (!subtractFromBalance(bet)) {
         toast({ title: "Not enough balance to bet", variant: 'destructive' });
         return;
     }
 
-    setBalance(prev => prev - bet);
     const newDeck = shuffleDeck(createDeck());
 
     const playerInitialHand = [{ card: newDeck.pop()! }, { card: newDeck.pop()! }];
@@ -99,11 +99,10 @@ export default function BlackjackPage() {
   };
   
   useEffect(() => {
-    if (playerScore === 21 && playerHand.length === 2) {
-      // Blackjack!
-      setTimeout(finishGame, 500);
+    if (gameState === 'player-turn' && playerScore === 21 && playerHand.length === 2) {
+      setTimeout(() => finishGame(dealerScore, true), 500);
     }
-  }, [playerScore, playerHand]);
+  }, [playerScore, playerHand, gameState, dealerScore]);
 
 
   const handleHit = () => {
@@ -145,27 +144,27 @@ export default function BlackjackPage() {
   }, [gameState]);
 
 
-  const finishGame = (finalDealerScore?: number) => {
+  const finishGame = (finalDealerScore?: number, isBlackjack = false) => {
     const pScore = calculateScore(playerHand);
     const dScore = finalDealerScore ?? calculateScore(dealerHand.map(h => ({...h, hidden: false})));
 
     if (pScore > 21) {
       setResultMessage('Player Busts! Dealer Wins.');
-    } else if (dScore > 21) {
-      setResultMessage('Dealer Busts! You Win!');
-      setBalance(prev => prev + bet * 2);
-    } else if (pScore === 21 && playerHand.length === 2) {
-      setResultMessage('Blackjack! You Win!');
-      setBalance(prev => prev + bet * 2.5);
+    } else if (isBlackjack) {
+        setResultMessage('Blackjack! You Win!');
+        addToBalance(bet * 2.5);
     }
-    else if (pScore > dScore) {
+    else if (dScore > 21) {
+      setResultMessage('Dealer Busts! You Win!');
+      addToBalance(bet * 2);
+    } else if (pScore > dScore) {
       setResultMessage('You Win!');
-      setBalance(prev => prev + bet * 2);
+      addToBalance(bet * 2);
     } else if (dScore > pScore) {
       setResultMessage('Dealer Wins.');
     } else {
       setResultMessage('Push! It\'s a tie.');
-      setBalance(prev => prev + bet);
+      addToBalance(bet);
     }
     setGameState('finished');
   }
@@ -223,5 +222,3 @@ export default function BlackjackPage() {
     </div>
   );
 }
-
-    

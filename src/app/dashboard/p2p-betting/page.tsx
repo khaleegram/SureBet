@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -35,6 +36,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useBalance } from '@/hooks/use-balance';
 
 
 type Bet = {
@@ -43,7 +45,7 @@ type Bet = {
     market: string;
     odds: number;
     stake: number;
-    stakeCurrency: 'ETH' | 'ADA' | 'BTC' | 'USDT';
+    stakeCurrency: 'USD';
     createdBy: string;
     matchedBy?: string;
     status: 'Open' | 'Matched' | 'Settling' | 'Settled';
@@ -51,19 +53,25 @@ type Bet = {
 };
 
 const initialOpenBets: Bet[] = [
-    { id: 'ob1', event: 'MMA Fight Night: Titan vs. Goliath', market: 'Goliath to Win', odds: 1.85, stake: 0.1, stakeCurrency: 'ETH', createdBy: 'UserA', status: 'Open' },
-    { id: 'ob2', event: 'E-Sports Finals: CyberDragons vs. QuantumLeap', market: 'Map 3 Winner: CyberDragons', odds: 2.50, stake: 500, stakeCurrency: 'ADA', createdBy: 'UserB', status: 'Open' },
-    { id: 'ob3', event: 'Crypto Price Prediction: BTC > $75k by EOD', market: 'Yes', odds: 1.50, stake: 0.05, stakeCurrency: 'BTC', createdBy: 'UserC', status: 'Open' },
-    { id: 'ob4', event: 'Presidential Election 2024', market: 'Candidate Z Wins', odds: 3.20, stake: 1000, stakeCurrency: 'USDT', createdBy: 'UserD', status: 'Open' },
+    { id: 'ob1', event: 'MMA Fight Night: Titan vs. Goliath', market: 'Goliath to Win', odds: 1.85, stake: 100, stakeCurrency: 'USD', createdBy: 'UserA', status: 'Open' },
+    { id: 'ob2', event: 'E-Sports Finals: CyberDragons vs. QuantumLeap', market: 'Map 3 Winner: CyberDragons', odds: 2.50, stake: 500, stakeCurrency: 'USD', createdBy: 'UserB', status: 'Open' },
+    { id: 'ob3', event: 'Crypto Price Prediction: BTC > $75k by EOD', market: 'Yes', odds: 1.50, stake: 50, stakeCurrency: 'USD', createdBy: 'UserC', status: 'Open' },
+    { id: 'ob4', event: 'Presidential Election 2024', market: 'Candidate Z Wins', odds: 3.20, stake: 1000, stakeCurrency: 'USD', createdBy: 'UserD', status: 'Open' },
 ]
 
 export default function P2PBettingPage() {
     const { toast } = useToast();
+    const { balance, addToBalance, subtractFromBalance } = useBalance();
     const [openBets, setOpenBets] = useState<Bet[]>(initialOpenBets);
     const [myBets, setMyBets] = useState<Bet[]>([]);
     const [isAiLoading, setIsAiLoading] = useState(false);
 
     const handleCreateBet = (newBet: Omit<Bet, 'id' | 'createdBy' | 'status'>) => {
+        if (!subtractFromBalance(newBet.stake)) {
+            toast({ title: 'Insufficient Balance', description: 'You do not have enough funds to create this bet.', variant: 'destructive'});
+            return;
+        }
+
         const betToAdd: Bet = {
             ...newBet,
             id: `bet_${Date.now()}`,
@@ -79,6 +87,11 @@ export default function P2PBettingPage() {
         const betToMatch = openBets.find(b => b.id === betId);
         if (!betToMatch) return;
         
+        if (!subtractFromBalance(betToMatch.stake * (betToMatch.odds - 1))) {
+            toast({ title: 'Insufficient Balance', description: 'You do not have enough funds to match this bet.', variant: 'destructive'});
+            return;
+        }
+
         setOpenBets(prev => prev.filter(b => b.id !== betId));
 
         const matchedBet: Bet = { ...betToMatch, status: 'Matched', matchedBy: 'You' };
@@ -100,16 +113,26 @@ export default function P2PBettingPage() {
                 const winner = Math.random() > 0.5 ? 'creator' : 'matcher';
                 const didIWin = (bet.createdBy === 'You' && winner === 'creator') || (bet.matchedBy === 'You' && winner === 'matcher');
 
-                toast({
-                    title: `Bet Settled: ${bet.event}`,
-                    description: `You ${didIWin ? 'won' : 'lost'} ${bet.stake} ${bet.stakeCurrency}.`,
-                    variant: didIWin ? 'default' : 'destructive',
-                });
+                if (didIWin) {
+                    const winnings = bet.createdBy === 'You' ? bet.stake * (bet.odds - 1) + bet.stake : bet.stake * bet.odds;
+                    addToBalance(winnings);
+                    toast({
+                        title: `Bet Settled: ${bet.event}`,
+                        description: `You won $${winnings.toFixed(2)}.`,
+                    });
+                } else {
+                     toast({
+                        title: `Bet Settled: ${bet.event}`,
+                        description: `You lost $${bet.createdBy === 'You' ? bet.stake : (bet.stake * (bet.odds - 1)).toFixed(2)}.`,
+                        variant: 'destructive',
+                    });
+                }
+
 
                 setMyBets(prev => prev.map(b => b.id === bet.id ? { ...b, status: 'Settled', winner } : b));
             });
         }
-    }, [myBets, toast]);
+    }, [myBets, toast, addToBalance]);
 
 
     const handleGenerateBets = async () => {
@@ -122,7 +145,7 @@ export default function P2PBettingPage() {
                 market: scenario.market,
                 odds: scenario.odds,
                 stake: Math.floor(Math.random() * 100) + 10,
-                stakeCurrency: 'USDT',
+                stakeCurrency: 'USD',
                 createdBy: 'AI_Oddsmaker',
                 status: 'Open'
             }));
@@ -181,7 +204,7 @@ export default function P2PBettingPage() {
             <div className="flex justify-between items-start gap-4">
                 <div>
                     <CardTitle>Betting Exchange</CardTitle>
-                    <CardDescription>Browse open bets or check on your own.</CardDescription>
+                    <CardDescription>Your current balance: ${balance.toFixed(2)}</CardDescription>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="outline" onClick={handleGenerateBets} disabled={isAiLoading}>
@@ -216,7 +239,7 @@ export default function P2PBettingPage() {
                             <TableCell className="font-medium flex items-center gap-2"><Swords className="h-4 w-4 text-primary" /> {bet.event}</TableCell>
                             <TableCell>{bet.market}</TableCell>
                             <TableCell className="font-mono text-accent">{bet.odds.toFixed(2)}</TableCell>
-                            <TableCell className="font-mono">{`${bet.stake} ${bet.stakeCurrency}`}</TableCell>
+                            <TableCell className="font-mono">{`$${bet.stake.toFixed(2)}`}</TableCell>
                              <TableCell>{bet.createdBy}</TableCell>
                             <TableCell className="text-right">
                                 <Button size="sm" onClick={() => handleMatchBet(bet.id)} disabled={bet.createdBy === 'You'}>
@@ -245,10 +268,10 @@ export default function P2PBettingPage() {
                             <TableCell className="font-medium">{bet.event}</TableCell>
                             <TableCell>{bet.market}</TableCell>
                             <TableCell className="font-mono text-accent">{bet.odds.toFixed(2)}</TableCell>
-                            <TableCell className="font-mono">{`${bet.stake} ${bet.stakeCurrency}`}</TableCell>
+                            <TableCell className="font-mono">{`$${bet.stake.toFixed(2)}`}</TableCell>
                             <TableCell className="text-right">
                                 <Badge variant={bet.status === 'Matched' || bet.status === 'Settling' ? 'secondary' : bet.status === 'Settled' ? 'default' : 'outline'}>
-                                    {bet.status}
+                                    {bet.status} {bet.winner && `(${bet.winner === (bet.createdBy === 'You' ? 'creator' : 'matcher') ? "Won" : "Lost"})`}
                                 </Badge>
                             </TableCell>
                         </TableRow>
@@ -269,7 +292,7 @@ function CreateBetDialog({ onCreateBet }: { onCreateBet: (bet: Omit<Bet, 'id' | 
     const [market, setMarket] = useState('');
     const [odds, setOdds] = useState(1.01);
     const [stake, setStake] = useState(10);
-    const [stakeCurrency, setStakeCurrency] = useState<'ETH' | 'ADA' | 'BTC' | 'USDT'>('USDT');
+    const [stakeCurrency, setStakeCurrency] = useState<'USD'>('USD');
 
     const handleSubmit = () => {
         if (event && market && odds > 1 && stake > 0) {
@@ -319,4 +342,3 @@ function CreateBetDialog({ onCreateBet }: { onCreateBet: (bet: Omit<Bet, 'id' | 
         </Dialog>
     );
 }
-    

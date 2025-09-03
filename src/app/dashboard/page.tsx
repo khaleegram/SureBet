@@ -1,3 +1,6 @@
+
+'use client';
+
 import {
   Card,
   CardContent,
@@ -15,8 +18,11 @@ import {
   ArrowUpRight,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useBalance } from '@/hooks/use-balance';
 
 export default function DashboardPage() {
+  const { balance } = useBalance();
+
   return (
     <div className="flex flex-col gap-8">
       <div>
@@ -35,9 +41,9 @@ export default function DashboardPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$10,482.45</div>
+            <div className="text-2xl font-bold">${balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
             <p className="text-xs text-muted-foreground">
-              +10.2% from last month
+              Available to bet
             </p>
           </CardContent>
         </Card>

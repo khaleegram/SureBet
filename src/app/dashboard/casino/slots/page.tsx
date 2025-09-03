@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Gem, Cherry, BarChart, DollarSign, Crown } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useBalance } from '@/hooks/use-balance';
 
 const symbols = [
   { icon: Gem, color: 'text-blue-400', name: 'Gem', payout: { two: 2, three: 20 } },
@@ -20,23 +21,23 @@ const symbols = [
 export default function SlotsPage() {
   const [reels, setReels] = useState([symbols[0], symbols[1], symbols[2]]);
   const [spinning, setSpinning] = useState(false);
-  const [balance, setBalance] = useState(1000);
+  const { balance, addToBalance, subtractFromBalance } = useBalance();
   const [betAmount, setBetAmount] = useState(10);
   const { toast } = useToast();
 
   const spin = () => {
-    if (balance < betAmount) {
+    if (betAmount <= 0) {
+     toast({ variant: 'destructive', title: 'Invalid Bet', description: 'Bet amount must be greater than zero.' });
+     return;
+   }
+
+    if (!subtractFromBalance(betAmount)) {
       toast({ variant: 'destructive', title: 'Insufficient Funds', description: 'You do not have enough balance to place that bet.' });
-      return;
-    }
-     if (betAmount <= 0) {
-      toast({ variant: 'destructive', title: 'Invalid Bet', description: 'Bet amount must be greater than zero.' });
       return;
     }
 
 
     setSpinning(true);
-    setBalance(balance - betAmount);
 
     const spinInterval = setInterval(() => {
       setReels([
@@ -69,7 +70,7 @@ export default function SlotsPage() {
       }
       
       if (winAmount > 0) {
-        setBalance(prev => prev + winAmount);
+        addToBalance(winAmount);
         toast({ title: winTitle, description: `You won $${winAmount.toFixed(2)}!` });
       } else {
         toast({ title: 'No Luck!', description: 'Try again.' });
@@ -133,5 +134,3 @@ export default function SlotsPage() {
     </div>
   );
 }
-
-    

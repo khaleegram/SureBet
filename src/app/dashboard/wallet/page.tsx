@@ -1,10 +1,11 @@
 
+'use client';
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -19,6 +20,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Bitcoin, Landmark, ArrowDownLeft, ArrowUpRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useBalance } from '@/hooks/use-balance';
 
 const cryptoTransactions = [
   { id: 't1', type: 'Deposit', amount: '+0.5 BTC', status: 'Completed', date: '2023-10-26' },
@@ -35,6 +37,12 @@ const fiatTransactions = [
 
 
 export default function WalletPage() {
+  const { balance } = useBalance();
+
+  // Assuming a split for demo purposes. In a real app this would be more complex.
+  const cryptoBalance = balance * 0.8;
+  const fiatBalance = balance * 0.2;
+
   return (
     <div className="space-y-8">
       <div>
@@ -48,8 +56,7 @@ export default function WalletPage() {
             <CardDescription>Your combined cryptocurrency holdings.</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold tracking-tighter">$8,432.10</p>
-            <p className="text-sm text-muted-foreground mt-1">~ 1.25 BTC</p>
+            <p className="text-4xl font-bold tracking-tighter">${cryptoBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
           </CardContent>
         </Card>
         <Card>
@@ -58,8 +65,7 @@ export default function WalletPage() {
             <CardDescription>Your balance in traditional currencies.</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-bold tracking-tighter">$2,050.35</p>
-            <p className="text-sm text-muted-foreground mt-1">USD & EUR</p>
+            <p className="text-4xl font-bold tracking-tighter">${fiatBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
           </CardContent>
         </Card>
       </div>
