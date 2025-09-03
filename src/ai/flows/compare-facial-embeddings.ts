@@ -63,18 +63,18 @@ You will be given:
 
 Your process is as follows:
 1.  **OCR Data Extraction:** Analyze the ID photo to extract the full name and date of birth.
-2.  **Data Comparison:** Compare the extracted name and DOB with the name and DOB provided in the form.
-    - **Name Matching:** Be intelligent about name comparison. Names on IDs are often formatted differently (e.g., "LAST, FIRST MIDDLE" vs. "FIRST MIDDLE LAST"). As long as the component names plausibly match, do not flag it as a major issue. A minor misspelling or different order should result in a 'review' status, not a 'failure'. A 'failure' should only be for clearly different names (e.g., "John Smith" vs. "Jane Doe").
-    - **DOB Matching:** Compare the dates of birth. Any discrepancy here should result in a 'review' or 'failure'.
-3.  **Facial Recognition:** Compare the face in the ID photo against the live photos. Determine if they are a match.
+2.  **Facial Recognition:** Compare the face in the ID photo against the live photos. Determine if they are a match.
+3.  **Data Comparison:** Compare the extracted name and DOB with the name and DOB provided in the form.
+    - **Name Matching:** Be intelligent about name comparison. Names on IDs are often formatted differently (e.g., "LAST, FIRST MIDDLE" vs. "FIRST MIDDLE LAST"). As long as the component names plausibly match, consider it a successful match. Do NOT flag it for review if the only issue is name ordering. A review should only be for a minor misspelling. A 'failure' should only be for clearly different names (e.g., "John Smith" vs. "Jane Doe").
+    - **DOB Matching:** Compare the dates of birth. An exact match is a success. Any discrepancy here should result in a 'review' or 'failure'.
 4.  **Age Estimation:** Estimate the age from the live photos and check for major discrepancies with the provided date of birth.
 
 Based on all checks, you will determine a final 'verificationStatus':
-- **success:** All checks pass flawlessly. The name, DOB, and face match perfectly.
+- **success:** All checks pass flawlessly. The name, DOB, and face match.
 - **failure:** There is a clear and undeniable mismatch. For example, the face in the ID is clearly a different person from the live photos, or the names are completely different.
-- **review:** There are minor discrepancies or low-confidence results. For example, a slight name misspelling, a different name order, a low similarity score in facial recognition, or an age estimation that is slightly off.
+- **review:** There are minor discrepancies or low-confidence results that require human attention. For example, a slight name misspelling, a low similarity score in facial recognition, or an age estimation that is significantly off.
 
-**IMPORTANT:** If the status is 'failure' or 'review', you MUST provide your reasoning in the 'reasoning' array. The reasons MUST be user-friendly, concise, and non-technical. Do NOT include confidence scores or internal data.
+**IMPORTANT:** If the status is 'failure' or 'review', you MUST provide your reasoning in the 'reasoning' array. The reasons MUST be user-friendly, concise, and non-technical. Do NOT include confidence scores or internal data. Only include reasons for actual issues. If the DOB matches, do not mention it in the reasoning for a 'review' status.
 
 **Good examples for reasoning:**
 - "The name on your ID does not appear to match the name you entered."
@@ -84,6 +84,7 @@ Based on all checks, you will determine a final 'verificationStatus':
 **Bad examples for reasoning:**
 - "Facial recognition confidence score was 65%."
 - "OCR extracted 'John Doe' but form input was 'Jon Doe'."
+- "The date of birth on your ID photo and the date of birth you provided match."
 
 **User-submitted data:**
 - Form Full Name: {{{formFullName}}}
