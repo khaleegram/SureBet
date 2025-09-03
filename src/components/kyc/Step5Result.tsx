@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle, XCircle, FileClock } from 'lucide-react';
 import Link from 'next/link';
 
@@ -16,17 +16,17 @@ const statusConfig = {
   success: {
     icon: <CheckCircle className="h-16 w-16 text-green-500" />,
     title: 'Verification Successful!',
-    description: 'Welcome to SureBet. You can now access all features.',
+    description: 'Welcome to SureBet. You will be redirected to your dashboard shortly.',
   },
   failure: {
     icon: <XCircle className="h-16 w-16 text-destructive" />,
     title: 'Verification Failed',
-    description: 'We were unable to verify your identity. Please see the reasons below.',
+    description: 'We were unable to verify your identity based on the information provided.',
   },
   review: {
     icon: <FileClock className="h-16 w-16 text-yellow-500" />,
     title: 'Verification Pending Review',
-    description: 'Your application requires manual review. This usually takes 24-48 hours. We will notify you via email.',
+    description: 'Your application requires a quick manual review. This usually takes less than 24 hours. We will notify you via email once it is complete.',
   },
 };
 
@@ -40,11 +40,15 @@ export function Step5Result({ status, messages }: Step5ResultProps) {
       <p className="text-muted-foreground max-w-md">{config.description}</p>
 
       {messages.length > 0 && (
-        <Card className="w-full text-left">
-          <CardContent className="p-4">
+        <Card className="w-full text-left bg-muted/50 border-border">
+            <CardHeader>
+                <CardTitle className="text-base">Issues Detected</CardTitle>
+                <CardDescription className="text-xs">Our system flagged the following potential issues for review:</CardDescription>
+            </CardHeader>
+          <CardContent className="pt-0">
             <ul className="space-y-2">
               {messages.map((msg, index) => (
-                <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <li key={index} className="flex items-start gap-3 text-sm text-muted-foreground">
                   {status === 'failure' ? <XCircle className="h-4 w-4 mt-0.5 shrink-0 text-destructive" /> : <FileClock className="h-4 w-4 mt-0.5 shrink-0 text-yellow-500" />}
                   <span>{msg}</span>
                 </li>
