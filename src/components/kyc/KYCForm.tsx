@@ -10,9 +10,7 @@ import { Step3FaceScan } from './Step3FaceScan';
 import { Step4Processing } from './Step4Processing';
 import { Step5Result } from './Step5Result';
 
-import { extractIdData } from '@/ai/flows/extract-id-data-with-ocr';
-import { compareFacialEmbeddings } from '@/ai/flows/compare-facial-embeddings';
-import { estimateAgeFromFacialScan } from '@/ai/flows/estimate-age-from-facial-scan';
+import { comprehensiveVerificationCheck } from '@/ai/flows/compare-facial-embeddings';
 
 import { useToast } from '@/hooks/use-toast';
 import { fileToDataUri } from '@/lib/utils';
@@ -30,7 +28,14 @@ const steps = ['Personal Info', 'ID Upload', 'Face Scan', 'Verification'];
 export function KYCForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
-    personalInfo: {},
+    personalInfo: {
+      fullName: '',
+      dateOfBirth: '',
+      address: '',
+      email: '',
+      phone: '',
+      country: '',
+    },
     idDocument: null,
     faceScans: [],
   });
@@ -61,55 +66,28 @@ export function KYCForm() {
         fullFormData.faceScans.map(fileToDataUri)
       );
 
-      const reviewMessages: string[] = [];
-      const failureMessages: string[] = [];
-
-      // --- AI Flow 1: Extract ID Data ---
-      const ocrResult = await extractIdData({ idDataUri });
-      if (ocrResult.fullName.toLowerCase() !== fullFormData.personalInfo.fullName.toLowerCase()) {
-        reviewMessages.push(`Name mismatch: Form says "${fullFormData.personalInfo.fullName}", ID says "${ocrResult.fullName}".`);
-      }
-      // Note: DOB comparison can be tricky due to formats. Simplified for demo.
-      if (ocrResult.dateOfBirth !== fullFormData.personalInfo.dateOfBirth) {
-         reviewMessages.push(`Date of birth mismatch: Form says "${fullFormData.personalInfo.dateOfBirth}", ID says "${ocrResult.dateOfBirth}".`);
-      }
-      
-      // --- AI Flow 2: Compare Facial Embeddings ---
-      const facialResult = await compareFacialEmbeddings({
-        idPhotoDataUri: idDataUri, // Assuming ID photo is the same as the document for this demo
+      // --- Single, Comprehensive AI Flow ---
+      // This single call asks the AI to perform all checks and return a final verdict.
+      const verificationResult = await comprehensiveVerificationCheck({
+        idPhotoDataUri: idDataUri,
         livePhotoDataUris: faceScanDataUris,
+        formFullName: fullFormData.personalInfo.fullName,
+        formDateOfBirth: fullFormData.personalInfo.dateOfBirth,
       });
 
-      if (facialResult.reviewRequired) {
-        reviewMessages.push('Facial scan similarity is low, requiring manual review.');
-      }
-      if (!facialResult.isMatch) {
-        failureMessages.push('Facial scan does not match the ID photo.');
-      }
-
-      // --- AI Flow 3: Estimate Age ---
-      const ageResult = await estimateAgeFromFacialScan({
-        faceDataUri: faceScanDataUris[0], // Use first live scan for age check
-        dateOfBirth: fullFormData.personalInfo.dateOfBirth,
+      setResult({
+        status: verificationResult.verificationStatus,
+        messages: verificationResult.reasoning,
       });
 
-      if (ageResult.reviewRequired) {
-        reviewMessages.push(`Estimated age (${ageResult.estimatedAge}) is not close to the age on ID.`);
-      }
-
-      // --- Determine Final Result ---
-      if (failureMessages.length > 0) {
-        setResult({ status: 'failure', messages: failureMessages });
-      } else if (reviewMessages.length > 0) {
-        setResult({ status: 'review', messages: reviewMessages });
-      } else {
-        setResult({ status: 'success', messages: [] });
-        toast({
+      if (verificationResult.verificationStatus === 'success') {
+         toast({
           title: "Verification Complete!",
           description: "You will be redirected to the dashboard.",
         });
         setTimeout(() => router.push('/dashboard'), 2000);
       }
+      
     } catch (error) {
       console.error('Verification process failed:', error);
       toast({

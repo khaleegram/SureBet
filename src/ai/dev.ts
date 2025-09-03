@@ -1,6 +1,8 @@
 import { config } from 'dotenv';
 config();
 
-import '@/ai/flows/extract-id-data-with-ocr.ts';
+// The following flow is no longer used individually.
+// import '@/ai/flows/extract-id-data-with-ocr.ts';
 import '@/ai/flows/compare-facial-embeddings.ts';
-import '@/ai/flows/estimate-age-from-facial-scan.ts';
+// The following flow is no longer used individually.
+// import '@/ai/flows/estimate-age-from-facial-scan.ts';

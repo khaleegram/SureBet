@@ -1,17 +1,17 @@
 'use server';
 
 /**
- * @fileOverview Compares facial embeddings from an uploaded ID with live facial images.
+ * @fileOverview Compares facial embeddings, ID data, and form data to make a holistic verification decision.
  *
- * - compareFacialEmbeddings - A function that handles the comparison of facial embeddings.
- * - CompareFacialEmbeddingsInput - The input type for the compareFacialEmbeddings function.
- * - CompareFacialEmbeddingsOutput - The return type for the compareFacialEmbeddings function.
+ * - comprehensiveVerificationCheck - A function that handles the complete verification process.
+ * - ComprehensiveVerificationInput - The input type for the comprehensiveVerificationCheck function.
+ * - ComprehensiveVerificationOutput - The return type for the comprehensiveVerificationCheck function.
  */
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const CompareFacialEmbeddingsInputSchema = z.object({
+const ComprehensiveVerificationInputSchema = z.object({
   idPhotoDataUri: z
     .string()
     .describe(
@@ -22,62 +22,72 @@ const CompareFacialEmbeddingsInputSchema = z.object({
       'A list of live photos taken from the user, as data URIs that must include a MIME type and use Base64 encoding. Expected format: data:<mimetype>;base64,<encoded_data>.'
     )
   ).describe('A list of live photos of the user.'),
+  formFullName: z.string().describe("The full name entered by the user in the form."),
+  formDateOfBirth: z.string().describe("The date of birth (YYYY-MM-DD) entered by the user in the form."),
 });
 
-export type CompareFacialEmbeddingsInput = z.infer<typeof CompareFacialEmbeddingsInputSchema>;
+export type ComprehensiveVerificationInput = z.infer<typeof ComprehensiveVerificationInputSchema>;
 
-const CompareFacialEmbeddingsOutputSchema = z.object({
-  matchConfidence: z
-    .number()
+const ComprehensiveVerificationOutputSchema = z.object({
+  verificationStatus: z
+    .enum(['success', 'failure', 'review'])
     .describe(
-      'A score between 0 and 1 representing the confidence that the faces match.'
+      'The final verification status. "success" if all checks pass. "failure" if there is a definitive mismatch. "review" if there are discrepancies that require manual checking.'
     ),
-  isMatch: z
-    .boolean()
+  reasoning: z
+    .array(z.string())
     .describe(
-      'Whether the facial images are determined to be a match based on the confidence score.'
-    ),
-  reviewRequired: z
-    .boolean()
-    .describe(
-      'Whether a manual review is required due to low confidence or other issues.'
+      'An array of strings explaining the reasons for a "failure" or "review" status.'
     ),
 });
 
-export type CompareFacialEmbeddingsOutput = z.infer<typeof CompareFacialEmbeddingsOutputSchema>;
+export type ComprehensiveVerificationOutput = z.infer<typeof ComprehensiveVerificationOutputSchema>;
 
-export async function compareFacialEmbeddings(
-  input: CompareFacialEmbeddingsInput
-): Promise<CompareFacialEmbeddingsOutput> {
-  return compareFacialEmbeddingsFlow(input);
+export async function comprehensiveVerificationCheck(
+  input: ComprehensiveVerificationInput
+): Promise<ComprehensiveVerificationOutput> {
+  return comprehensiveVerificationFlow(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'compareFacialEmbeddingsPrompt',
-  input: {schema: CompareFacialEmbeddingsInputSchema},
-  output: {schema: CompareFacialEmbeddingsOutputSchema},
-  prompt: `You are an expert in facial recognition and identity verification.
+  name: 'comprehensiveVerificationPrompt',
+  input: {schema: ComprehensiveVerificationInputSchema},
+  output: {schema: ComprehensiveVerificationOutputSchema},
+  prompt: `You are an AI agent responsible for KYC (Know Your Customer) identity verification for a secure online platform. Your task is to analyze user-submitted data and make a final determination.
 
-You will receive a photo extracted from a user's ID and a set of live photos taken from the user.
+You will be given:
+1.  A photo extracted from a government-issued ID.
+2.  A series of live photos taken by the user.
+3.  The full name as entered by the user in a form.
+4.  The date of birth (YYYY-MM-DD) as entered by the user in a form.
 
-Your task is to determine if the faces in the ID photo and the live photos match.
+Your process is as follows:
+1.  **OCR Data Extraction:** Analyze the ID photo to extract the full name and date of birth.
+2.  **Data Comparison:** Compare the extracted name and DOB with the name and DOB provided in the form.
+3.  **Facial Recognition:** Compare the face in the ID photo against the live photos. Determine if they are a match with a high degree of confidence.
+4.  **Age Estimation:** Estimate the age from the live photos and check for major discrepancies with the provided date of birth.
 
-You should provide a matchConfidence score (between 0 and 1) indicating the likelihood of a match.
+Based on all checks, you will determine a final 'verificationStatus':
+- **success:** All checks pass flawlessly. The name, DOB, and face match perfectly.
+- **failure:** There is a clear and undeniable mismatch. For example, the face in the ID is clearly a different person from the live photos.
+- **review:** There are minor discrepancies or low-confidence results. For example, a slight name misspelling, a low similarity score in the facial recognition, or an age estimation that is off by a few years.
 
-You should set isMatch to true if the confidence score is above a certain threshold (e.g., 0.8) and false otherwise.
+You must provide your reasoning in the 'reasoning' array if the status is 'failure' or 'review'.
 
-You should set reviewRequired to true if the confidence score is low or if there are any issues detected (e.g., poor image quality, inconsistent lighting, unusual facial expressions), and false otherwise.
+**User-submitted data:**
+- Form Full Name: {{{formFullName}}}
+- Form Date of Birth: {{{formDateOfBirth}}}
+- ID Photo: {{media url=idPhotoDataUri}}
+- Live Photos: {{#each livePhotoDataUris}}{{media url=this}}{{#unless @last}}, {{/unless}}{{/each}}
 
-ID Photo: {{media url=idPhotoDataUri}}
-Live Photos: {{#each livePhotoDataUris}}{{media url=this}}{{#unless @last}}, {{/unless}}{{/each}}
-`,
+Perform your analysis and return the final verdict.`,
 });
 
-const compareFacialEmbeddingsFlow = ai.defineFlow(
+const comprehensiveVerificationFlow = ai.defineFlow(
   {
-    name: 'compareFacialEmbeddingsFlow',
-    inputSchema: CompareFacialEmbeddingsInputSchema,
-    outputSchema: CompareFacialEmbeddingsOutputSchema,
+    name: 'comprehensiveVerificationFlow',
+    inputSchema: ComprehensiveVerificationInputSchema,
+    outputSchema: ComprehensiveVerificationOutputSchema,
   },
   async input => {
     const {output} = await prompt(input);
