@@ -62,8 +62,8 @@ export default function SigninPage() {
         title: 'Sign In Successful',
         description: "Welcome back! You're now logged in.",
       });
-      router.push('/dashboard');
-      router.refresh(); // Force a refresh to ensure middleware is re-evaluated with the new cookie
+      // Force a hard navigation to ensure the new cookie is sent and the middleware is re-evaluated.
+      window.location.href = '/dashboard';
     } catch (error: any) {
       let errorMessage = 'An unexpected error occurred. Please try again.';
       if (error instanceof FirebaseError) {
