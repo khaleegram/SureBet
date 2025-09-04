@@ -1,3 +1,5 @@
+
+'use client';
 import { KYCForm } from '@/components/kyc/KYCForm';
 import { Logo } from '@/components/Logo';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';

@@ -16,6 +16,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { fileToDataUri } from '@/lib/utils';
 import { FirebaseError } from 'firebase/app';
+import { getIdToken } from 'firebase/auth';
 
 type FormData = {
   personalInfo: any;
@@ -65,7 +66,7 @@ export function KYCForm() {
 
     try {
       // --- Firebase Auth User Creation ---
-      await signUp(fullFormData.personalInfo.email, fullFormData.personalInfo.password);
+      const userCredential = await signUp(fullFormData.personalInfo.email, fullFormData.personalInfo.password);
 
       // --- AI Verification Flow ---
       const idDataUri = await fileToDataUri(fullFormData.idDocument!);
@@ -86,11 +87,21 @@ export function KYCForm() {
       });
 
       if (verificationResult.verificationStatus === 'success') {
-         toast({
+         const idToken = await getIdToken(userCredential.user);
+        // Set session cookie
+        await fetch('/api/auth/session', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idToken }),
+        });
+        
+        toast({
           title: "Verification Complete!",
           description: "Welcome! You will be redirected to the dashboard.",
         });
-        setTimeout(() => router.push('/dashboard'), 2000);
+        
+        // Use a full page refresh to ensure cookie is set
+        setTimeout(() => window.location.href = '/dashboard', 2000);
       }
       
     } catch (error: any) {
