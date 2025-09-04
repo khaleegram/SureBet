@@ -22,14 +22,14 @@ const popularGames = [
         description: 'Spin the reels for a chance at massive jackpots.',
         image: 'https://picsum.photos/600/400?random=1',
         aiHint: 'casino slot machine',
-        href: '/dashboard/casino',
+        href: '/dashboard/casino/slots',
     },
     { 
         title: 'Poker', 
         description: 'Join a table and test your skills against other players.',
         image: 'https://picsum.photos/600/400?random=2',
         aiHint: 'poker cards',
-        href: '/dashboard/casino',
+        href: '/dashboard/casino/poker',
     },
 ];
 
