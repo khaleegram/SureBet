@@ -62,8 +62,8 @@ export default function SigninPage() {
         title: 'Sign In Successful',
         description: "Welcome back! You're now logged in.",
       });
-      // Force a hard navigation to ensure the new cookie is sent and the middleware is re-evaluated.
-      window.location.href = '/dashboard';
+      // The AuthProvider will handle the redirect automatically.
+      // No need for router.push or window.location.href
     } catch (error: any) {
       let errorMessage = 'An unexpected error occurred. Please try again.';
       if (error instanceof FirebaseError) {

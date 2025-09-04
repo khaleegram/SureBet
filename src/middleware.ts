@@ -6,8 +6,6 @@ const BLOCKED_COUNTRIES = [
   'KP', 'IR', 'SY', 'CU', 'SG', 'AE',
 ];
 
-const PROTECTED_ROUTES = ['/dashboard', '/wallet', '/p2p-betting', '/casino', '/sports-betting', '/review', '/investor'];
-
 export async function middleware(req: NextRequest) {
   const {nextUrl} = req;
   const pathname = nextUrl.pathname;
@@ -27,26 +25,10 @@ export async function middleware(req: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
-  // --- Authentication Logic ---
-  const sessionCookie = req.cookies.get('firebase-session');
-  const isProtectedRoute = PROTECTED_ROUTES.some(route => pathname.startsWith(route) || pathname === '/dashboard');
+  // Client-side logic in AuthProvider now handles auth-based redirects.
+  // The session cookie is still used for server-side actions or potential future API route protection,
+  // but it's no longer used here for page-level redirects.
   
-  // Redirect to signin if trying to access a protected route without a session
-  if (isProtectedRoute && !sessionCookie) {
-    const url = nextUrl.clone();
-    url.pathname = '/signin';
-    url.searchParams.set('redirectedFrom', pathname);
-    return NextResponse.redirect(url);
-  }
-  
-  // If user is logged in, redirect them away from auth pages
-  if((pathname === '/signin' || pathname === '/signup') && sessionCookie) {
-     const url = nextUrl.clone();
-     url.pathname = '/dashboard';
-     return NextResponse.redirect(url);
-  }
-
-
   return NextResponse.next();
 }
 
