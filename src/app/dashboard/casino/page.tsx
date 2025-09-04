@@ -1,3 +1,4 @@
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -34,7 +35,7 @@ const games = [
         image: 'https://picsum.photos/600/400?random=3',
         aiHint: 'casino roulette wheel',
         live: true,
-        href: '/dashboard/casino'
+        href: '/dashboard/casino/roulette'
     },
     { 
         title: 'Blackjack', 

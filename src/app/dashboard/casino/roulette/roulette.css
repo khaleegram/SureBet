@@ -1,0 +1,41 @@
+
+.roulette-wheel {
+    position: relative;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 8px solid #a88d4c; /* Gold-like border */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(0,0,0,0.5);
+    background: #3a3a3a; /* Dark gray background */
+}
+
+.roulette-slice {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    clip-path: polygon(50% 50%, 50% 0, 52.8% 0); /* Creates a very thin slice */
+    transform-origin: 50% 50%;
+}
+
+.roulette-slice-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Aligns text to the outer edge */
+    padding-top: 10px;
+    box-sizing: border-box;
+}
+
+.roulette-slice-content span {
+    font-size: 14px;
+    font-weight: bold;
+    transform: rotate(90deg) translateX(120px) rotate(-90deg); /* Complex transform to orient text */
+    display: block;
+    width: 20px;
+    text-align: center;
+}
