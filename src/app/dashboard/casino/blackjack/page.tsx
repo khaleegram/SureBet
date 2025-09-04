@@ -131,15 +131,20 @@ export default function BlackjackPage() {
       let currentDealerScore = calculateScore(currentDealerHand);
       let currentDeck = [...deck];
 
-      while (currentDealerScore < 17 && currentDeck.length > 0) {
-        currentDealerHand.push({ card: currentDeck.pop()! });
-        currentDealerScore = calculateScore(currentDealerHand);
+      const dealDealerCard = () => {
+        if (currentDealerScore < 17 && currentDeck.length > 0) {
+            currentDealerHand.push({ card: currentDeck.pop()! });
+            currentDealerScore = calculateScore(currentDealerHand);
+            setDealerHand([...currentDealerHand]);
+            setDealerScore(currentDealerScore);
+            setDeck([...currentDeck]);
+            setTimeout(dealDealerCard, 800); 
+        } else {
+            finishGame(currentDealerScore);
+        }
       }
-      
-      setDealerHand(currentDealerHand);
-      setDealerScore(currentDealerScore);
-      setDeck(currentDeck);
-      finishGame(currentDealerScore);
+
+      setTimeout(dealDealerCard, 500);
     }
   }, [gameState]);
 
@@ -191,7 +196,6 @@ export default function BlackjackPage() {
                     {gameState === 'betting' && (
                         <div className="flex flex-col items-center gap-4">
                              <p className="text-xl font-bold text-white">Place Your Bet</p>
-                             {/* Simple bet buttons for now */}
                              <div className="flex gap-2">
                                 <Button variant={bet === 25 ? 'secondary' : 'outline'} onClick={() => setBet(25)}>$25</Button>
                                 <Button variant={bet === 50 ? 'secondary' : 'outline'} onClick={() => setBet(50)}>$50</Button>

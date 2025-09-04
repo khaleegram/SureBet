@@ -14,6 +14,14 @@ import Link from 'next/link';
 
 const games = [
     { 
+        title: 'Blackjack', 
+        description: 'Beat the dealer to 21 in this classic card game.',
+        image: 'https://picsum.photos/600/400?random=4',
+        aiHint: 'blackjack cards',
+        live: false,
+        href: '/dashboard/casino/blackjack'
+    },
+    { 
         title: 'Slots', 
         description: 'Spin the reels for a chance at massive jackpots.',
         image: 'https://picsum.photos/600/400?random=1',
@@ -37,21 +45,13 @@ const games = [
         live: true,
         href: '/dashboard/casino/roulette'
     },
-    { 
-        title: 'Blackjack', 
-        description: 'Beat the dealer to 21 in this classic card game.',
-        image: 'https://picsum.photos/600/400?random=4',
-        aiHint: 'blackjack cards',
-        live: false,
-        href: '/dashboard/casino/blackjack'
-    },
      { 
         title: 'Baccarat', 
         description: 'Bet on the Player, Banker, or a Tie in this elegant game.',
         image: 'https://picsum.photos/600/400?random=5',
         aiHint: 'baccarat table',
         live: false,
-        href: '/dashboard/casino'
+        href: '/dashboard/casino' // No page yet
     },
      { 
         title: 'Live Sports Betting', 
