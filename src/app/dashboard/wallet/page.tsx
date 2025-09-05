@@ -23,16 +23,16 @@ import { Badge } from '@/components/ui/badge';
 import { useBalance } from '@/hooks/use-balance';
 
 const cryptoTransactions = [
-  { id: 't1', type: 'Deposit', amount: '+0.5 BTC', status: 'Completed', date: '2023-10-26' },
-  { id: 't2', type: 'Withdrawal', amount: '-0.2 ETH', status: 'Pending', date: '2023-10-25' },
-  { id: 't3', type: 'Bet Won', amount: '+1.5 SOL', status: 'Completed', date: '2023-10-24' },
-  { id: 't4', type: 'Bet Placed', amount: '-100 ADA', status: 'Completed', date: '2023-10-23' },
+  { id: 't1', type: 'Deposit', amount: '+0.5 BTC', status: 'Completed', date: '2025-10-26' },
+  { id: 't2', type: 'Withdrawal', amount: '-0.2 ETH', status: 'Pending', date: '2025-10-25' },
+  { id: 't3', type: 'Bet Won', amount: '+1.5 SOL', status: 'Completed', date: '2025-10-24' },
+  { id: 't4', type: 'Bet Placed', amount: '-100 ADA', status: 'Completed', date: '2025-10-23' },
 ];
 
 const fiatTransactions = [
-  { id: 'f1', type: 'Deposit', amount: '+$1,000.00 USD', status: 'Completed', date: '2023-10-22' },
-  { id: 'f2', type: 'Withdrawal', amount: '-$500.00 EUR', status: 'Failed', date: '2023-10-21' },
-  { id: 'f3', type: 'Game Win', amount: '+$250.00 USD', status: 'Completed', date: '2023-10-20' },
+  { id: 'f1', type: 'Deposit', amount: '+$1,000.00 USD', status: 'Completed', date: '2025-10-22' },
+  { id: 'f2', type: 'Withdrawal', amount: '-$500.00 EUR', status: 'Failed', date: '2025-10-21' },
+  { id: 'f3', 'type': 'Game Win', amount: '+$250.00 USD', status: 'Completed', date: '2025-10-20' },
 ];
 
 

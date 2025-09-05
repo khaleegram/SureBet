@@ -19,9 +19,20 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useBalance } from '@/hooks/use-balance';
+import { useAuth } from '@/hooks/use-auth';
+import { format } from 'date-fns';
 
 export default function DashboardPage() {
   const { balance } = useBalance();
+  const { user } = useAuth();
+  
+  const getVerificationDate = () => {
+    if (user?.metadata?.creationTime) {
+      return format(new Date(user.metadata.creationTime), 'yyyy-MM-dd');
+    }
+    return '2025-10-26';
+  }
+
 
   return (
     <div className="flex flex-col gap-8">
@@ -83,7 +94,7 @@ export default function DashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold text-green-400">Verified</div>
             <p className="text-xs text-muted-foreground">
-              Completed on 2023-10-26
+              Completed on {getVerificationDate()}
             </p>
           </CardContent>
         </Card>

@@ -18,11 +18,11 @@ import { Badge } from '@/components/ui/badge';
 import { UserCheck, UserX, Eye } from 'lucide-react';
 
 const reviewQueue = [
-    { id: 'usr_1', user: 'John Doe', flaggedReason: 'Name mismatch on ID', date: '2023-10-26' },
-    { id: 'usr_2', user: 'Jane Smith', flaggedReason: 'Low facial scan similarity', date: '2023-10-26' },
-    { id: 'usr_3', user: 'Mike Johnson', flaggedReason: 'Age estimation discrepancy', date: '2023-10-25' },
-    { id: 'usr_4', user: 'Emily White', flaggedReason: 'Low facial scan similarity', date: '2023-10-24' },
-    { id: 'usr_5', user: 'Chris Brown', flaggedReason: 'Name mismatch on ID', date: '2023-10-23' },
+    { id: 'usr_1', user: 'John Doe', flaggedReason: 'Name mismatch on ID', date: '2025-10-26' },
+    { id: 'usr_2', user: 'Jane Smith', flaggedReason: 'Low facial scan similarity', date: '2025-10-26' },
+    { id: 'usr_3', user: 'Mike Johnson', flaggedReason: 'Age estimation discrepancy', date: '2025-10-25' },
+    { id: 'usr_4', user: 'Emily White', flaggedReason: 'Low facial scan similarity', date: '2025-10-24' },
+    { id: 'usr_5', user: 'Chris Brown', flaggedReason: 'Name mismatch on ID', date: '2025-10-23' },
 ];
 
 export default function ReviewPage() {
