@@ -14,6 +14,7 @@ import {
   type GenerateInvestorReportInput,
   type GenerateInvestorReportOutput,
 } from '@/ai/schemas';
+import {z} from 'genkit';
 
 
 export async function generateInvestorReport(
@@ -22,16 +23,22 @@ export async function generateInvestorReport(
   return generateInvestorReportFlow(input);
 }
 
+const InvestorReportPromptInputSchema = z.object({
+  stringifiedKpiData: z.string(),
+  stringifiedDailyActiveUsersData: z.string(),
+  stringifiedKycVerificationData: z.string(),
+});
+
 const prompt = ai.definePrompt({
   name: 'generateInvestorReportPrompt',
-  input: {schema: GenerateInvestorReportInputSchema},
+  input: {schema: InvestorReportPromptInputSchema},
   output: {schema: GenerateInvestorReportOutputSchema},
   prompt: `You are a sharp and insightful business analyst for a cutting-edge online betting platform called SureBet. Your task is to generate a concise weekly performance report for investors based on the data provided. The report should be well-structured, easy to read, and highlight key trends and insights. Use Markdown for formatting (headings, bold text, lists).
 
 **Data Provided:**
-- **Key Performance Indicators (KPIs):** {{{JSON.stringify kpiData}}}
-- **Daily Active Users (DAU) last 7 days:** {{{JSON.stringify dailyActiveUsersData}}}
-- **KYC Verification Funnel:** {{{JSON.stringify kycVerificationData}}}
+- **Key Performance Indicators (KPIs):** {{{stringifiedKpiData}}}
+- **Daily Active Users (DAU) last 7 days:** {{{stringifiedDailyActiveUsersData}}}
+- **KYC Verification Funnel:** {{{stringifiedKycVerificationData}}}
 
 **Instructions:**
 1.  **Title:** Start with the title: "Weekly Performance Report".
@@ -51,7 +58,12 @@ const generateInvestorReportFlow = ai.defineFlow(
     outputSchema: GenerateInvestorReportOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const promptInput = {
+        stringifiedKpiData: JSON.stringify(input.kpiData),
+        stringifiedDailyActiveUsersData: JSON.stringify(input.dailyActiveUsersData),
+        stringifiedKycVerificationData: JSON.stringify(input.kycVerificationData),
+    };
+    const {output} = await prompt(promptInput);
     return output!;
   }
 );
