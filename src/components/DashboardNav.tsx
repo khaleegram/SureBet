@@ -36,11 +36,6 @@ const menuItems = [
 
 const adminItems = [
   { href: '/dashboard/review', label: 'Manual Review', icon: Gavel },
-  {
-    href: '/dashboard/investor',
-    label: 'Investor Dashboard',
-    icon: BarChartBig,
-  },
 ];
 
 export function DashboardNav() {

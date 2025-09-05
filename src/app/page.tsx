@@ -89,9 +89,6 @@ export default function Home() {
                   <Button size="lg" asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
                     <Link href="/signup">Verify Your Identity</Link>
                   </Button>
-                  <Button size="lg" variant="outline" asChild>
-                    <Link href="/dashboard/investor">Investor Dashboard</Link>
-                  </Button>
                 </div>
               </div>
                <div className="relative h-auto">
