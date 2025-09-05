@@ -234,7 +234,7 @@ export default function InvestorDashboardPage() {
             <CardHeader>
                 <CardTitle>KYC Verification Funnel</CardTitle>
                 <CardDescription>Breakdown of user verification outcomes.</CardDescription>
-            </Header>
+            </CardHeader>
             <CardContent>
                 <ChartContainer config={kycChartConfig} className="h-[250px] w-full">
                   <BarChart data={kycVerificationData} layout="vertical" margin={{ left: 10 }}>
