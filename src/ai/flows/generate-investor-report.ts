@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview Generates an investor-facing performance report using AI.
@@ -41,14 +42,14 @@ const prompt = ai.definePrompt({
 - **KYC Verification Funnel:** {{{stringifiedKycVerificationData}}}
 
 **Instructions:**
-1.  **Title:** Start with the title: "Weekly Performance Report".
-2.  **Executive Summary:** Write a brief, high-level summary of the week's performance.
-3.  **Key Metrics Analysis:** Analyze the main KPIs. Comment on the Gross Gaming Revenue, User Growth (based on DAU), and KYC Pass Rate.
-4.  **User Engagement Trends:** Analyze the DAU data. Identify the trend over the week (e.g., "strong weekend growth", "stable user base"). Point out the peak DAU for the week.
-5.  **Compliance & Security:** Analyze the KYC and Geo-blocking data. Frame the KYC pass rate and the number of geo-blocks as positive indicators of a robust and secure platform that's effectively filtering users and complying with regulations.
+1.  **Title:** Start with the title: "# Weekly Performance Report".
+2.  **Executive Summary:** Write a brief, high-level summary (2-3 sentences) of the week's performance, touching on user growth and revenue.
+3.  **Key Metrics Analysis:** Under a "## Key Metrics" heading, analyze the main KPIs. Comment on the Gross Gaming Revenue, User Growth (based on DAU), and KYC Pass Rate. Provide specific numbers from the data.
+4.  **User Engagement Trends:** Under a "## User Engagement" heading, analyze the DAU data. Identify the trend over the week (e.g., "strong weekend growth", "stable user base"). Point out the peak DAU for the week.
+5.  **Compliance & Security:** Under a "## Compliance & Security" heading, analyze the KYC and Geo-blocking data. Frame the KYC pass rate and the number of geo-blocks as positive indicators of a robust and secure platform that's effectively filtering users and complying with regulations.
 6.  **Tone:** Maintain a professional, confident, and optimistic tone suitable for investors.
 
-Generate the report now based on the data.`,
+Generate the report now based on the data. Ensure your entire response is a single Markdown string.`,
 });
 
 const generateInvestorReportFlow = ai.defineFlow(
@@ -64,6 +65,9 @@ const generateInvestorReportFlow = ai.defineFlow(
         stringifiedKycVerificationData: JSON.stringify(input.kycVerificationData),
     };
     const {output} = await prompt(promptInput);
-    return output!;
+    if (!output) {
+      throw new Error("The AI model failed to generate a report. Please try again.");
+    }
+    return output;
   }
 );
