@@ -37,14 +37,14 @@ const prompt = ai.definePrompt({
   prompt: `You are a sharp and insightful business analyst for a cutting-edge online betting platform called SureBet. Your task is to generate a concise weekly performance report for investors based on the data provided. The report should be well-structured, easy to read, and highlight key trends and insights. Use Markdown for formatting (headings, bold text, lists).
 
 **Data Provided:**
-- **Key Performance Indicators (KPIs):** {{{stringifiedKpiData}}}
-- **Daily Active Users (DAU) last 7 days:** {{{stringifiedDailyActiveUsersData}}}
-- **KYC Verification Funnel:** {{{stringifiedKycVerificationData}}}
+- **Key Performance Indicators (KPIs) as a JSON string:** {{{stringifiedKpiData}}}
+- **Daily Active Users (DAU) for the last 7 days as a JSON string:** {{{stringifiedDailyActiveUsersData}}}
+- **KYC Verification Funnel data as a JSON string:** {{{stringifiedKycVerificationData}}}
 
 **Instructions:**
 1.  **Title:** Start with the title: "# Weekly Performance Report".
 2.  **Executive Summary:** Write a brief, high-level summary (2-3 sentences) of the week's performance, touching on user growth and revenue.
-3.  **Key Metrics Analysis:** Under a "## Key Metrics" heading, analyze the main KPIs. Comment on the Gross Gaming Revenue, User Growth (based on DAU), and KYC Pass Rate. Provide specific numbers from the data.
+3.  **Key Metrics Analysis:** Under a "## Key Metrics" heading, analyze the main KPIs from the JSON data. Comment on the Gross Gaming Revenue, User Growth (based on DAU), and KYC Pass Rate. Provide specific numbers from the data.
 4.  **User Engagement Trends:** Under a "## User Engagement" heading, analyze the DAU data. Identify the trend over the week (e.g., "strong weekend growth", "stable user base"). Point out the peak DAU for the week.
 5.  **Compliance & Security:** Under a "## Compliance & Security" heading, analyze the KYC and Geo-blocking data. Frame the KYC pass rate and the number of geo-blocks as positive indicators of a robust and secure platform that's effectively filtering users and complying with regulations.
 6.  **Tone:** Maintain a professional, confident, and optimistic tone suitable for investors.
