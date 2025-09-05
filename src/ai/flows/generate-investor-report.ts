@@ -8,34 +8,12 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
-
-const DailyActiveUserSchema = z.object({
-  date: z.string(),
-  users: z.number(),
-});
-
-const KycVerificationSchema = z.object({
-  result: z.string(),
-  count: z.number(),
-});
-
-const KpiSchema = z.object({
-    kycPassRate: z.string().describe("The overall KYC pass rate percentage."),
-    geoBlocksTriggered: z.string().describe("The number of geo-blocks triggered in the last 24 hours."),
-    dailyActiveUsers: z.string().describe("The current number of daily active users."),
-    grossGamingRevenue: z.string().describe("The gross gaming revenue for the last 30 days."),
-});
-
-export const GenerateInvestorReportInputSchema = z.object({
-  dailyActiveUsersData: z.array(DailyActiveUserSchema).describe('The daily active users data for the last 7 days.'),
-  kycVerificationData: z.array(KycVerificationSchema).describe('The breakdown of KYC verification results.'),
-  kpiData: KpiSchema.describe('Key Performance Indicators for the platform.'),
-});
-export type GenerateInvestorReportInput = z.infer<typeof GenerateInvestorReportInputSchema>;
-
-export const GenerateInvestorReportOutputSchema = z.string().describe("A comprehensive, well-structured, and insightful weekly performance report for investors, formatted as Markdown. It should include sections for Key Metrics, User Engagement, and Compliance.");
-export type GenerateInvestorReportOutput = z.infer<typeof GenerateInvestorReportOutputSchema>;
+import {
+  GenerateInvestorReportInputSchema,
+  GenerateInvestorReportOutputSchema,
+  type GenerateInvestorReportInput,
+  type GenerateInvestorReportOutput,
+} from '@/ai/schemas';
 
 
 export async function generateInvestorReport(
