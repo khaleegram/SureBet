@@ -12,25 +12,23 @@ import {
 import {
   Bar,
   BarChart,
-  CartesianGrid,
   Line,
   LineChart,
-  ResponsiveContainer,
   XAxis,
   YAxis,
   Tooltip,
+  CartesianGrid,
 } from 'recharts';
 import {
   ChartContainer,
   ChartTooltipContent,
+  type ChartConfig,
 } from '@/components/ui/chart';
 import { ShieldCheck, Globe, Users, TrendingUp, Bot, Sparkles, Loader2 } from 'lucide-react';
-import type { ChartConfig } from '@/components/ui/chart';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { generateInvestorReport, GenerateInvestorReportInput } from '@/ai/flows/generate-investor-report';
+import { generateInvestorReport, type GenerateInvestorReportInput } from '@/ai/flows/generate-investor-report';
 import { Textarea } from '@/components/ui/textarea';
-
 
 const dailyActiveUsersData = [
   { date: 'Mon', users: 550 },
@@ -46,14 +44,14 @@ const kycVerificationData = [
     { result: 'Auto-Approved', count: 850, fill: 'var(--color-approved)' },
     { result: 'Manual Review', count: 120, fill: 'var(--color-review)' },
     { result: 'Failed', count: 30, fill: 'var(--color-failed)' },
-]
+];
 
 const kpiData = {
     kycPassRate: '97.0%',
     geoBlocksTriggered: '1,204',
     dailyActiveUsers: '1,100',
     grossGamingRevenue: '$1.2M',
-}
+};
 
 const kycChartConfig = {
   count: {
@@ -71,15 +69,14 @@ const kycChartConfig = {
     label: "Failed",
     color: "hsl(var(--destructive))",
   },
-} satisfies ChartConfig
+} satisfies ChartConfig;
 
 const dauChartConfig = {
   users: {
     label: "Active Users",
     color: "hsl(var(--chart-1))",
   },
-} satisfies ChartConfig
-
+} satisfies ChartConfig;
 
 export default function InvestorDashboardPage() {
   const [report, setReport] = useState('');
@@ -177,7 +174,7 @@ export default function InvestorDashboardPage() {
         </Card>
       </div>
 
-       <Card>
+      <Card>
         <CardHeader>
           <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
              <div>
@@ -210,7 +207,6 @@ export default function InvestorDashboardPage() {
             )}
         </CardContent>
       </Card>
-
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
