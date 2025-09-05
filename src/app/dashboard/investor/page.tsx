@@ -27,7 +27,8 @@ import {
 import { ShieldCheck, Globe, Users, TrendingUp, Bot, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { generateInvestorReport, type GenerateInvestorReportInput } from '@/ai/flows/generate-investor-report';
+import { generateInvestorReport } from '@/ai/flows/generate-investor-report';
+import type { GenerateInvestorReportInput } from '@/ai/schemas';
 import { Textarea } from '@/components/ui/textarea';
 
 const dailyActiveUsersData = [
