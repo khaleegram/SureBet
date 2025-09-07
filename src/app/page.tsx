@@ -223,15 +223,15 @@ export default function Home() {
                   <p className="text-muted-foreground">A dynamic interface for live sports betting, complete with real-time odds and event tracking.</p>
                 </CardContent>
               </Card>
-              <Card className="bg-card/80 backdrop-blur-sm">
+               <Card className="bg-card/80 backdrop-blur-sm">
                  <CardHeader className="flex flex-row items-center gap-4">
                    <div className="rounded-full bg-primary/10 p-3">
                     <ShieldCheck className="h-6 w-6 text-primary" />
                   </div>
-                  <CardTitle className="font-headline">Investor Dashboard</CardTitle>
+                  <CardTitle className="font-headline">Manual Review Queue</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">A comprehensive dashboard showcasing compliance metrics and platform performance for investor confidence.</p>
+                  <p className="text-muted-foreground">A queue for flagged cases (mismatched ID, facial scan, or age issues) for human review.</p>
                 </CardContent>
               </Card>
             </div>
