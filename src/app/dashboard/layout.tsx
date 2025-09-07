@@ -14,7 +14,7 @@ export default function DashboardLayout({
         <div className="flex min-h-screen">
           <DashboardNav />
           <SidebarInset>
-            <div className="p-4 sm:p-6 lg:p-8">{children}</div>
+            <div className="p-4 sm:p-6 lg:p-8 animate-fade-in-up">{children}</div>
           </SidebarInset>
         </div>
       </SidebarProvider>

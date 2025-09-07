@@ -113,7 +113,7 @@ export default function Home() {
               className="object-cover"
             />
           <div className="container px-4 md:px-6 relative z-20 text-center">
-            <div className="flex flex-col justify-center space-y-6 items-center">
+            <div className="flex flex-col justify-center space-y-6 items-center animate-fade-in-up">
                 <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-7xl/none font-headline bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
                   The Future of High-Stakes Betting is Here
                 </h1>
@@ -133,7 +133,7 @@ export default function Home() {
         </section>
 
         <section className="w-full bg-background py-16 md:py-24">
-             <Card className="container mx-auto max-w-6xl bg-card/60 backdrop-blur-md">
+             <Card className="container mx-auto max-w-6xl bg-card/60 backdrop-blur-md animate-fade-in-up">
                 <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                        <span className="font-headline text-2xl">Featured Event</span>
@@ -176,28 +176,28 @@ export default function Home() {
         
         <section id="how-it-works" className="w-full bg-card/30 py-20 md:py-32">
             <div className="container px-4 md:px-6">
-                 <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
+                 <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12 animate-fade-in-up">
                      <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Get Started in 3 Easy Steps</h2>
                     <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                       Our streamlined process gets you from signup to the winner's circle in minutes.
                     </p>
                 </div>
                 <div className="mx-auto grid max-w-5xl items-center gap-6 lg:grid-cols-3 lg:gap-12">
-                    <Card className="text-center p-6">
+                    <Card className="text-center p-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mb-4">
                            <UserPlus className="h-8 w-8 text-primary" />
                         </div>
                         <h3 className="text-xl font-bold">1. Verify Identity</h3>
                         <p className="text-muted-foreground mt-2">Complete our secure, AI-powered KYC process in under 2 minutes.</p>
                     </Card>
-                     <Card className="text-center p-6">
+                     <Card className="text-center p-6 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
                         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mb-4">
                            <Banknote className="h-8 w-8 text-primary" />
                         </div>
                         <h3 className="text-xl font-bold">2. Deposit Funds</h3>
                         <p className="text-muted-foreground mt-2">Instantly add funds to your wallet using crypto or traditional fiat currency.</p>
                     </Card>
-                     <Card className="text-center p-6">
+                     <Card className="text-center p-6 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
                         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 mb-4">
                            <Gamepad2 className="h-8 w-8 text-primary" />
                         </div>
@@ -210,15 +210,15 @@ export default function Home() {
 
         <section id="games" className="w-full bg-background py-20 md:py-32">
             <div className="container px-4 md:px-6">
-                <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
+                <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12 animate-fade-in-up">
                      <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">Popular Games</h2>
                     <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                       Jump into the action with our most popular casino and betting options.
                     </p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {popularGames.map(game => (
-                         <Card key={game.title} className="overflow-hidden group">
+                    {popularGames.map((game, i) => (
+                         <Card key={game.title} className="overflow-hidden group animate-fade-in-up" style={{ animationDelay: `${i * 0.2}s` }}>
                             <Link href={user ? game.href : '/signin'} className="block h-full flex flex-col">
                                 <CardHeader className="p-0 relative h-48">
                                     <Image src={game.image} data-ai-hint={game.aiHint} alt={game.title} fill objectFit="cover" className="group-hover:scale-105 transition-transform duration-300" />
@@ -244,7 +244,7 @@ export default function Home() {
 
         <section id="features" className="w-full bg-card/30 py-20 md:py-32">
           <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center animate-fade-in-up">
               <div className="space-y-2">
                 <div className="inline-block rounded-lg bg-muted px-3 py-1 text-sm">Key Features</div>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline">An Unmatched Platform</h2>
@@ -254,8 +254,8 @@ export default function Home() {
               </div>
             </div>
             <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:grid-cols-3 mt-12">
-              {features.map((feature) => (
-                <div key={feature.title} className="flex items-start gap-4">
+              {features.map((feature, i) => (
+                <div key={feature.title} className="flex items-start gap-4 animate-fade-in-up" style={{ animationDelay: `${i * 0.15}s` }}>
                     <div className="rounded-full bg-primary/10 p-3 mt-1">
                         <feature.icon className="h-6 w-6 text-primary" />
                     </div>
@@ -311,5 +311,3 @@ export default function Home() {
     </div>
   );
 }
-
-    

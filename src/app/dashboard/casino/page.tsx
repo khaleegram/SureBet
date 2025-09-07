@@ -72,8 +72,8 @@ export default function CasinoPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {games.map(game => (
-             <Card key={game.title} className="overflow-hidden group">
+        {games.map((game, i) => (
+             <Card key={game.title} className="overflow-hidden group animate-fade-in-up" style={{ animationDelay: `${i * 100}ms`}}>
                 <Link href={game.href} className="block h-full flex flex-col">
                     <CardHeader className="p-0 relative h-48">
                         <Image src={game.image} data-ai-hint={game.aiHint} alt={game.title} fill objectFit="cover" className="group-hover:scale-105 transition-transform duration-300" />
