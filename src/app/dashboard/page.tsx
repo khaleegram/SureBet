@@ -92,7 +92,7 @@ export default function DashboardPage() {
             <ShieldCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-400">Verified</div>
+            <div className="text-2xl font-bold text-accent">Verified</div>
             <p className="text-xs text-muted-foreground">
               Completed on {getVerificationDate()}
             </p>
@@ -115,14 +115,14 @@ export default function DashboardPage() {
                   <p className="text-sm font-medium leading-none">Bitcoin Deposit</p>
                   <p className="text-sm text-muted-foreground">Completed</p>
                 </div>
-                <div className="ml-auto font-medium text-green-400">+0.5 BTC</div>
+                <div className="ml-auto font-medium text-accent">+0.5 BTC</div>
               </div>
                <div className="flex items-center">
                 <div className="ml-4 space-y-1">
                   <p className="text-sm font-medium leading-none">Roulette Win</p>
                   <p className="text-sm text-muted-foreground">Casino Game</p>
                 </div>
-                <div className="ml-auto font-medium text-green-400">+$1,200.00</div>
+                <div className="ml-auto font-medium text-accent">+$1,200.00</div>
               </div>
               <div className="flex items-center">
                 <div className="ml-4 space-y-1">

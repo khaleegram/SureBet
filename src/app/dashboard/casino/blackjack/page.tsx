@@ -178,14 +178,14 @@ export default function BlackjackPage() {
         <h1 className="text-4xl font-bold tracking-tight font-headline text-center mb-2">Blackjack</h1>
         <p className="text-muted-foreground text-center mb-8">Get as close to 21 as possible without going over.</p>
 
-        <Card className="w-full max-w-4xl bg-green-900/40 border-green-700 p-6">
+        <Card className="w-full max-w-4xl bg-card/80 border p-6">
             <CardContent>
                 <Hand title="Dealer's Hand" cards={dealerHand} score={gameState === 'player-turn' ? dealerScore : calculateScore(dealerHand.map(c => ({...c, hidden: false})))} />
 
                 <div className="my-8 text-center">
                     {gameState === 'finished' && (
                         <div className="flex flex-col items-center gap-2 mb-4">
-                           <p className="text-3xl font-bold text-amber-300">
+                           <p className="text-3xl font-bold text-primary">
                                 {resultMessage}
                            </p>
                             <Button onClick={() => setGameState('betting')}>Play Again</Button>
@@ -213,7 +213,7 @@ export default function BlackjackPage() {
             <CardContent className="p-4 flex items-center justify-between">
                 <div>
                      <p className="font-semibold">Your Balance</p>
-                     <p className="text-2xl font-bold text-green-400">${balance.toFixed(2)}</p>
+                     <p className="text-2xl font-bold text-primary">${balance.toFixed(2)}</p>
                 </div>
                 <div className="flex gap-4">
                     <Button size="lg" onClick={handleHit} disabled={gameState !== 'player-turn'}>Hit</Button>

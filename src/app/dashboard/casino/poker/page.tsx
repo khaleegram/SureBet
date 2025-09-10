@@ -45,7 +45,7 @@ const PlayerCard = ({ name, balance, hand, isTurn, status, bet, showHand }: { na
              {status && <Badge variant={status === 'Folded' ? 'destructive' : 'secondary'} className={isTurn ? 'animate-pulse' : ''}>{status}</Badge>}
         </div>
        
-        <p className="font-mono text-green-400">${balance.toLocaleString()}</p>
+        <p className="font-mono text-primary">${balance.toLocaleString()}</p>
         {bet > 0 && <p className="text-xs text-amber-400">Bet: ${bet}</p>}
          <div className="flex gap-2 mt-2 h-28">
             {hand.map((card, index) => (
@@ -230,7 +230,7 @@ export default function PokerPage() {
     }
 
     return (
-        <div className="min-h-[80vh] flex flex-col justify-between p-4 bg-green-900/40">
+        <div className="min-h-[80vh] flex flex-col justify-between p-4 bg-background">
             <div className="flex justify-center gap-8 items-end">
                 {otherPlayers.map(player => (
                     <PlayerCard 
@@ -249,7 +249,7 @@ export default function PokerPage() {
                 <Card className="w-fit mx-auto bg-transparent border-none shadow-none">
                     <CardHeader className="text-center">
                         <CardTitle className="text-3xl font-bold font-headline text-white">Texas Hold'em</CardTitle>
-                        <CardDescription className="text-2xl font-mono text-amber-300">Pot: ${pot.toLocaleString()}</CardDescription>
+                        <CardDescription className="text-2xl font-mono text-primary">Pot: ${pot.toLocaleString()}</CardDescription>
                     </CardHeader>
                     <CardContent className="flex justify-center gap-4 min-h-[120px]">
                         {communityCards.map((card, index) => (
