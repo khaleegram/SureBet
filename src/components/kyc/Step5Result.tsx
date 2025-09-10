@@ -16,7 +16,7 @@ const statusConfig = {
   success: {
     icon: <CheckCircle className="h-16 w-16 text-green-500" />,
     title: 'Verification Successful!',
-    description: 'Welcome to SureBet. You will be redirected to your dashboard shortly.',
+    description: 'Welcome to CrypDict. You will be redirected to your dashboard shortly.',
   },
   failure: {
     icon: <XCircle className="h-16 w-16 text-destructive" />,
@@ -61,8 +61,7 @@ export function Step5Result({ status, messages }: Step5ResultProps) {
       <div className="flex gap-4 pt-4">
         {status === 'success' && (
           <Button asChild>
-            <Link href="/dashboard">Go to Dashboard</Link>
-          </Button>
+            <Link href="/dashboard">Go to Dashboard</Link>          </Button>
         )}
         {(status === 'failure' || status === 'review') && (
           <Button variant="outline" asChild>

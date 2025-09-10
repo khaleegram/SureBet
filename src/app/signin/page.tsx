@@ -92,7 +92,7 @@ export default function SigninPage() {
         <CardHeader>
           <CardTitle className="text-2xl font-headline text-center">Welcome Back</CardTitle>
           <CardDescription className="text-center">
-            Sign in to your SureBet account to continue.
+            Sign in to your CrypDict account to continue.
           </CardDescription>
         </CardHeader>
         <CardContent>

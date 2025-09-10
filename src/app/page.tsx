@@ -13,7 +13,7 @@ const popularGames = [
     { 
         title: 'Live Sports Betting', 
         description: 'Bet on live sports events as they happen.',
-        image: 'https://picsum.photos/600/400?random=6',
+        image: 'https://picsum.photos/seed/6/600/400',
         aiHint: 'stadium lights',
         href: '/dashboard/sports-betting',
         icon: Swords
@@ -21,7 +21,7 @@ const popularGames = [
     { 
         title: 'Slots', 
         description: 'Spin the reels for a chance at massive jackpots.',
-        image: 'https://picsum.photos/600/400?random=1',
+        image: 'https://picsum.photos/seed/1/600/400',
         aiHint: 'casino slot machine',
         href: '/dashboard/casino/slots',
         icon: Gem
@@ -29,7 +29,7 @@ const popularGames = [
     { 
         title: 'Poker', 
         description: 'Join a table and test your skills against other players.',
-        image: 'https://picsum.photos/600/400?random=2',
+        image: 'https://picsum.photos/seed/2/600/400',
         aiHint: 'poker cards',
         href: '/dashboard/casino/poker',
         icon: Users
@@ -106,7 +106,7 @@ export default function Home() {
         <section className="relative w-full py-24 md:py-40 lg:py-48">
            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent z-10"></div>
           <Image
-              src="https://picsum.photos/1600/900"
+              src="https://picsum.photos/seed/hero/1600/900"
               alt="Hero background"
               data-ai-hint="stadium lights dark"
               fill
@@ -115,10 +115,10 @@ export default function Home() {
           <div className="container px-4 md:px-6 relative z-20 text-center">
             <div className="flex flex-col justify-center space-y-6 items-center animate-fade-in-up">
                 <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-7xl/none font-headline bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-                  The Future of High-Stakes Betting is Here
+                  The Future of Prediction Markets is Here
                 </h1>
                 <p className="max-w-[700px] text-muted-foreground md:text-xl">
-                  Experience a cutting-edge gambling platform with P2P betting, casino classics, and seamless crypto transactions. Built for the modern gambler.
+                  Experience a cutting-edge platform with P2P betting, casino classics, and seamless crypto transactions. Built for the modern user.
                 </p>
                 <div className="flex flex-col gap-4 sm:flex-row">
                     <Button size="lg" asChild>
@@ -148,7 +148,7 @@ export default function Home() {
                     <div className="grid md:grid-cols-2 gap-6 items-center">
                         <div className="relative h-64 rounded-lg overflow-hidden">
                              <Image
-                              src="https://picsum.photos/600/400"
+                              src="https://picsum.photos/seed/mma/600/400"
                               alt="MMA Fight"
                               data-ai-hint="sports mma"
                               fill
@@ -275,7 +275,7 @@ export default function Home() {
             <div className="grid gap-8 md:grid-cols-4">
                 <div className="flex flex-col gap-4">
                     <Logo />
-                    <p className="text-muted-foreground text-sm">The most secure and transparent online betting platform.</p>
+                    <p className="text-muted-foreground text-sm">The most secure and transparent online prediction market.</p>
                 </div>
                 <div className="text-sm">
                     <h4 className="font-semibold mb-2">Platform</h4>
@@ -297,13 +297,13 @@ export default function Home() {
                     <h4 className="font-semibold mb-2">Community</h4>
                     <ul className="space-y-2 text-muted-foreground">
                         <li><Link href="#" className="hover:text-primary">Twitter / X</Link></li>
-                        <li><Link href="#" className="hover:text-primary">Telegram</Link></li>
+                        <li><Link href="#" className="hovertext-primary">Telegram</Link></li>
                         <li><Link href="#" className="hover:text-primary">Discord</Link></li>
                     </ul>
                 </div>
             </div>
              <div className="mt-8 border-t border-border/40 pt-8 flex flex-col md:flex-row items-center justify-between text-sm text-muted-foreground">
-                  <p>&copy; {new Date().getFullYear()} SureBet. All Rights Reserved.</p>
+                  <p>&copy; {new Date().getFullYear()} CrypDict. All Rights Reserved.</p>
                   <p>This is a fictional platform for demonstration purposes.</p>
             </div>
         </div>

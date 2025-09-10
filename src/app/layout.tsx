@@ -13,8 +13,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'SureBet',
-  description: 'A cutting-edge crypto gambling platform.',
+  title: 'CrypDict',
+  description: 'A cutting-edge crypto prediction market platform.',
 };
 
 export default function RootLayout({
