@@ -103,15 +103,7 @@ export default function Home() {
       </header>
 
       <main className="flex-1">
-        <section className="relative w-full py-24 md:py-40 lg:py-48">
-           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent z-10"></div>
-          <Image
-              src="https://picsum.photos/seed/hero/1600/900"
-              alt="Hero background"
-              data-ai-hint="stadium lights dark"
-              fill
-              className="object-cover"
-            />
+        <section className="relative w-full py-24 md:py-40 lg:py-48 bg-black">
           <div className="container px-4 md:px-6 relative z-20 text-center">
             <div className="flex flex-col justify-center space-y-6 items-center animate-fade-in-up">
                 <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-7xl/none font-headline bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
@@ -311,3 +303,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
