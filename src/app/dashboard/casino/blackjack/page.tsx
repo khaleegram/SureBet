@@ -5,9 +5,9 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { useBalance } from '@/hooks/use-balance';
+import { PlayingCard, CardBack } from '@/components/PlayingCard';
 
 type CardType = {
     suit: 'H' | 'D' | 'C' | 'S';
@@ -51,11 +51,9 @@ const calculateScore = (hand: HandCard[]): number => {
 const Hand = ({ title, cards, score }: { title: string; cards: HandCard[]; score: number; }) => (
     <div>
         <h3 className="text-xl font-bold text-center mb-2">{title}</h3>
-        <div className="flex justify-center items-center gap-4 min-h-[160px]">
+        <div className="flex justify-center items-center gap-4 min-h-[160px] h-40">
             {cards.map(({card, hidden}, index) => (
-                <div key={index} className="w-28 h-40 rounded-lg bg-white relative overflow-hidden shadow-lg transition-transform hover:scale-105">
-                     <Image src={`/cards/${hidden ? 'back' : `${card.value}${card.suit}`}.svg`} alt={hidden ? 'Card Back' : `${card.value} of ${card.suit}`} layout="fill" />
-                </div>
+               hidden ? <CardBack key={index} /> : <PlayingCard key={index} suit={card.suit} value={card.value} />
             ))}
         </div>
         <div className="text-center mt-2">
@@ -86,8 +84,8 @@ export default function BlackjackPage() {
 
     const newDeck = shuffleDeck(createDeck());
 
-    const playerInitialHand = [{ card: newDeck.pop()! }, { card: newDeck.pop()! }];
-    const dealerInitialHand = [{ card: newDeck.pop()! }, { card: newDeck.pop()!, hidden: true }];
+    const playerInitialHand: HandCard[] = [{ card: newDeck.pop()! }, { card: newDeck.pop()! }];
+    const dealerInitialHand: HandCard[] = [{ card: newDeck.pop()! }, { card: newDeck.pop()!, hidden: true }];
     
     setDeck(newDeck);
     setPlayerHand(playerInitialHand);
@@ -146,7 +144,7 @@ export default function BlackjackPage() {
 
       setTimeout(dealDealerCard, 500);
     }
-  }, [gameState]);
+  }, [gameState, dealerHand, deck]);
 
 
   const finishGame = (finalDealerScore?: number, isBlackjack = false) => {

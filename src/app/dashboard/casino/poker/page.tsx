@@ -7,9 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
 import { useBalance } from '@/hooks/use-balance';
+import { PlayingCard, CardBack } from '@/components/PlayingCard';
 
 type CardType = {
   suit: 'H' | 'D' | 'C' | 'S';
@@ -24,6 +24,7 @@ type Player = {
   status: string; // 'Thinking...', 'Folded', 'Checked', 'Called', 'Raised', 'All In', ''
   isUser: boolean;
   bet: number;
+  showHand?: boolean;
 };
 
 const suits: CardType['suit'][] = ['H', 'D', 'C', 'S'];
@@ -37,31 +38,27 @@ const shuffleDeck = (deck: CardType[]): CardType[] => {
   return deck.sort(() => Math.random() - 0.5);
 };
 
-const PlayerCard = ({ name, balance, cards, isTurn, status, bet }: { name: string; balance: number; cards?: (CardType | 'back')[]; isTurn?: boolean; status?: string; bet?: number }) => (
-    <div className={`p-4 rounded-lg border-2 ${isTurn ? 'border-primary shadow-lg shadow-primary/50' : 'border-border'} bg-card/80 relative transition-all duration-300`}>
+const PlayerCard = ({ name, balance, hand, isTurn, status, bet, showHand }: { name: string; balance: number; hand: CardType[]; isTurn?: boolean; status?: string; bet?: number; showHand?: boolean }) => (
+    <div className={`p-4 rounded-lg border-2 ${isTurn ? 'border-primary shadow-lg shadow-primary/50' : 'border-border'} bg-card/80 relative transition-all duration-300 w-48`}>
         <div className="flex items-center justify-between">
-             <p className="font-bold text-lg">{name}</p>
+             <p className="font-bold text-lg truncate">{name}</p>
              {status && <Badge variant={status === 'Folded' ? 'destructive' : 'secondary'} className={isTurn ? 'animate-pulse' : ''}>{status}</Badge>}
         </div>
        
         <p className="font-mono text-green-400">${balance.toLocaleString()}</p>
         {bet > 0 && <p className="text-xs text-amber-400">Bet: ${bet}</p>}
-         <div className="flex gap-2 mt-2 h-24">
-            {cards ? cards.map((card, index) => (
-                 <div key={`${typeof card === 'string' ? card : card.value + card.suit}-${index}`} className="w-16 h-24 rounded-md bg-white flex items-center justify-center relative overflow-hidden">
-                    <Image src={`/cards/${typeof card === 'string' ? card : `${card.value}${card.suit}`}.svg`} alt={typeof card === 'string' ? card : `${card.value} of ${card.suit}`} layout="fill" />
-                 </div>
-            )) : (
-                 <div className="w-16 h-24 rounded-md bg-card-foreground/10 flex items-center justify-center"></div>
-            )}
+         <div className="flex gap-2 mt-2 h-28">
+            {hand.map((card, index) => (
+                showHand ? 
+                <PlayingCard key={index} suit={card.suit} value={card.value} className="w-1/2" /> :
+                <CardBack key={index} className="w-1/2" />
+            ))}
         </div>
     </div>
 )
 
 const CommunityCard = ({ card }: { card: CardType }) => (
-    <div className="w-20 h-28 rounded-md bg-white flex items-center justify-center relative overflow-hidden shadow-lg">
-         <Image src={`/cards/${card.value}${card.suit}.svg`} alt={`${card.value} of ${card.suit}`} layout="fill" />
-    </div>
+    <PlayingCard suit={card.suit} value={card.value} className="w-20 h-28" />
 )
 
 const SMALL_BLIND = 25;
@@ -88,7 +85,7 @@ export default function PokerPage() {
 
         const newDeck = shuffleDeck(createDeck());
         const initialPlayers: Player[] = [
-            { name: 'You', balance: balance - BIG_BLIND, hand: [newDeck.pop()!, newDeck.pop()!], isTurn: true, status: 'Thinking...', isUser: true, bet: BIG_BLIND },
+            { name: 'You', balance: balance - BIG_BLIND, hand: [newDeck.pop()!, newDeck.pop()!], isTurn: true, status: 'Thinking...', isUser: true, bet: BIG_BLIND, showHand: true },
             { name: 'Player 2', balance: 9975, hand: [newDeck.pop()!, newDeck.pop()!], isTurn: false, status: '', isUser: false, bet: SMALL_BLIND },
             { name: 'Player 3', balance: 18500, hand: [newDeck.pop()!, newDeck.pop()!], isTurn: false, status: '', isUser: false, bet: 0 },
             { name: 'Player 4', balance: 25000, hand: [newDeck.pop()!, newDeck.pop()!], isTurn: false, status: '', isUser: false, bet: 0 },
@@ -198,6 +195,8 @@ export default function PokerPage() {
 
     const endHand = () => {
          const user = players.find(p => p.isUser);
+         setPlayers(players.map(p => ({...p, showHand: true})));
+
         if (user && user.status !== 'Folded') {
             const didWin = Math.random() > 0.5; // Simplified win logic
             if (didWin) {
@@ -212,7 +211,7 @@ export default function PokerPage() {
         
         setTimeout(() => {
             setGameState('pre-deal');
-        }, 3000);
+        }, 5000);
     }
 
     const userPlayer = players.find(p => p.isUser);
@@ -231,16 +230,17 @@ export default function PokerPage() {
     }
 
     return (
-        <div className="min-h-[80vh] flex flex-col justify-between p-4">
+        <div className="min-h-[80vh] flex flex-col justify-between p-4 bg-green-900/40">
             <div className="flex justify-center gap-8 items-end">
                 {otherPlayers.map(player => (
                     <PlayerCard 
                         key={player.name}
                         name={player.name} 
                         balance={player.balance} 
-                        cards={gameState === 'showdown' ? player.hand : ['back', 'back']}
+                        hand={player.hand}
                         status={player.status}
                         bet={player.bet}
+                        showHand={player.showHand || gameState === 'showdown'}
                     />
                 ))}
             </div>
@@ -248,7 +248,7 @@ export default function PokerPage() {
             <div className="my-8">
                 <Card className="w-fit mx-auto bg-transparent border-none shadow-none">
                     <CardHeader className="text-center">
-                        <CardTitle className="text-3xl font-bold font-headline">Texas Hold'em</CardTitle>
+                        <CardTitle className="text-3xl font-bold font-headline text-white">Texas Hold'em</CardTitle>
                         <CardDescription className="text-2xl font-mono text-amber-300">Pot: ${pot.toLocaleString()}</CardDescription>
                     </CardHeader>
                     <CardContent className="flex justify-center gap-4 min-h-[120px]">
@@ -264,10 +264,11 @@ export default function PokerPage() {
                     <PlayerCard 
                         name={userPlayer.name} 
                         balance={balance} 
-                        cards={userPlayer.hand} 
+                        hand={userPlayer.hand} 
                         isTurn={userPlayer.isTurn}
                         status={userPlayer.status}
                         bet={userPlayer.bet}
+                        showHand={userPlayer.showHand}
                     />
                      <Card className="w-full max-w-sm">
                         <CardContent className="p-4 flex flex-col gap-2">
