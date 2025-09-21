@@ -8,8 +8,9 @@ import { StepIndicator } from './StepIndicator';
 import { Step1PersonalInfo } from './Step1PersonalInfo';
 import { Step2IdUpload } from './Step2IdUpload';
 import { Step3FaceScan } from './Step3FaceScan';
-import { Step4Processing } from './Step4Processing';
-import { Step5Result } from './Step5Result';
+import { Step4Acknowledgment } from './Step4Acknowledgment';
+import { Step5Processing } from './Step5Processing';
+import { Step6Result } from './Step6Result';
 
 import { comprehensiveVerificationCheck } from '@/ai/flows/compare-facial-embeddings';
 import { useAuth } from '@/hooks/use-auth';
@@ -26,7 +27,7 @@ type FormData = {
 
 type ResultStatus = 'success' | 'failure' | 'review';
 
-const steps = ['Personal Info', 'ID Upload', 'Face Scan', 'Verification'];
+const steps = ['Personal Info', 'ID Upload', 'Face Scan', 'Acknowledge', 'Verification'];
 
 export function KYCForm() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -59,10 +60,14 @@ export function KYCForm() {
     setCurrentStep(3);
   };
 
-  const handleFaceScanNext = async (files: File[]) => {
-    const fullFormData = { ...formData, faceScans: files };
-    setFormData(fullFormData);
-    setCurrentStep(4); // Show processing screen
+  const handleFaceScanNext = (files: File[]) => {
+    setFormData((prev) => ({ ...prev, faceScans: files }));
+    setCurrentStep(4);
+  };
+
+  const handleAcknowledgmentNext = async () => {
+    const fullFormData = { ...formData };
+    setCurrentStep(5); // Show processing screen
 
     try {
       // --- Firebase Auth User Creation ---
@@ -126,13 +131,18 @@ export function KYCForm() {
       });
       setResult({ status: 'failure', messages: [errorMessage] });
     } finally {
-        setCurrentStep(5);
+        setCurrentStep(6);
     }
   };
+
 
   const handleBack = () => {
     setCurrentStep((prev) => prev - 1);
   };
+  
+  const handleAcknowledgmentDecline = () => {
+      router.push('/');
+  }
 
   const renderStep = () => {
     switch (currentStep) {
@@ -147,10 +157,12 @@ export function KYCForm() {
         return <Step2IdUpload onNext={handleIdUploadNext} onBack={handleBack} />;
       case 3:
         return <Step3FaceScan onNext={handleFaceScanNext} onBack={handleBack} />;
-      case 4:
-        return <Step4Processing />;
+       case 4:
+        return <Step4Acknowledgment onNext={handleAcknowledgmentNext} onBack={handleAcknowledgmentDecline} />;
       case 5:
-        return result ? <Step5Result status={result.status} messages={result.messages} /> : <Step4Processing />;
+        return <Step5Processing />;
+      case 6:
+        return result ? <Step6Result status={result.status} messages={result.messages} /> : <Step5Processing />;
       default:
         return null;
     }
@@ -158,8 +170,8 @@ export function KYCForm() {
 
   return (
     <div className="w-full">
-      {currentStep <= 4 && (
-        <StepIndicator currentStep={currentStep} totalSteps={4} steps={steps} />
+      {currentStep <= 5 && (
+        <StepIndicator currentStep={currentStep} totalSteps={5} steps={steps} />
       )}
       <div className="mt-4">{renderStep()}</div>
     </div>
