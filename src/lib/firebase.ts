@@ -3,13 +3,13 @@ import { initializeApp, getApps } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCzALpUYx4X7xXrX1OXy-NRVDtdA_b16Q8",
-  authDomain: "surebet-d7d10.firebaseapp.com",
-  projectId: "surebet-d7d10",
-  storageBucket: "surebet-d7d10.appspot.com",
-  messagingSenderId: "590360869636",
-  appId: "1:590360869636:web:fc8eeb556c6052d4926e51",
-  measurementId: "G-B2FG7XDY03"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
