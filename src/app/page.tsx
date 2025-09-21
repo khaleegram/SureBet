@@ -107,7 +107,7 @@ export default function Home() {
           <div className="container px-4 md:px-6 relative z-20 text-center">
             <div className="flex flex-col justify-center space-y-6 items-center animate-fade-in-up">
                 <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-7xl/none font-headline bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
-                  The Future of Prediction Markets is Here
+                  The Future of Online Betting is Here
                 </h1>
                 <p className="max-w-[700px] text-muted-foreground md:text-xl">
                   Experience a cutting-edge platform with P2P betting, casino classics, and seamless crypto transactions. Built for the modern user.
@@ -267,7 +267,7 @@ export default function Home() {
             <div className="grid gap-8 md:grid-cols-4">
                 <div className="flex flex-col gap-4">
                     <Logo />
-                    <p className="text-muted-foreground text-sm">The most secure and transparent online prediction market.</p>
+                    <p className="text-muted-foreground text-sm">The most secure and transparent online betting platform.</p>
                 </div>
                 <div className="text-sm">
                     <h4 className="font-semibold mb-2">Platform</h4>

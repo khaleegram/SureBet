@@ -14,7 +14,7 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: 'CrypDict',
-  description: 'A cutting-edge crypto prediction market platform.',
+  description: 'A cutting-edge online betting platform.',
 };
 
 export default function RootLayout({
