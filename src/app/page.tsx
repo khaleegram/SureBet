@@ -295,7 +295,7 @@ export default function Home() {
                 </div>
             </div>
              <div className="mt-8 border-t border-border/40 pt-8 flex flex-col md:flex-row items-center justify-between text-sm text-muted-foreground">
-                  <p>&copy; {new Date().getFullYear()} CrypDict. All Rights Reserved.</p>
+                  <p>&copy; {new Date().getFullYear()} House of the Royal Goose. All Rights Reserved.</p>
                   <p>This is a fictional platform for demonstration purposes.</p>
             </div>
         </div>

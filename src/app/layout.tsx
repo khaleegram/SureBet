@@ -13,7 +13,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'CrypDict',
+  title: 'House of the Royal Goose',
   description: 'A cutting-edge online betting platform.',
 };
 

@@ -41,7 +41,7 @@ export default function DashboardPage() {
           Welcome Back, Player
         </h1>
         <p className="text-muted-foreground">
-          Here's a snapshot of your activity on CrypDict.
+          Here's a snapshot of your activity on House of the Royal Goose.
         </p>
       </div>
 
