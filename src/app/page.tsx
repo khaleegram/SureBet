@@ -129,7 +129,7 @@ export default function Home() {
                 <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                        <span className="font-headline text-2xl">Featured Event</span>
-                        <div className="flex items-center gap-2 text-sm text-red-400 animate-pulse">
+                        <div className="flex items-center gap-2 text-sm text-primary animate-pulse">
                             <Zap className="w-4 h-4" />
                             LIVE
                         </div>

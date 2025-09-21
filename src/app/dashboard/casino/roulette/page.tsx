@@ -178,7 +178,11 @@ export default function RoulettePage() {
                     <CardHeader className="text-center">
                         <CardTitle>Place Your Bets</CardTitle>
                         {result !== null && (
-                            <CardDescription className="text-2xl font-bold" style={{ color: getNumberColor(result)}}>
+                            <CardDescription className={cn("text-2xl font-bold", {
+                                'text-primary': getNumberColor(result) === 'red',
+                                'text-foreground': getNumberColor(result) === 'black',
+                                'text-green-500': getNumberColor(result) === 'green',
+                            })}>
                                 Number is {result}
                             </CardDescription>
                         )}

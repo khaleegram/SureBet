@@ -102,8 +102,8 @@ export default function WalletPage() {
                   {cryptoTransactions.map((tx) => (
                     <TableRow key={tx.id}>
                       <TableCell>{tx.type}</TableCell>
-                      <TableCell className={tx.amount.startsWith('+') ? 'text-accent' : 'text-red-400'}>{tx.amount}</TableCell>
-                      <TableCell><Badge variant={tx.status === 'Completed' ? 'default' : tx.status === 'Pending' ? 'secondary' : 'destructive'} className={tx.status === 'Completed' ? 'bg-accent/20 text-accent' : ''}>{tx.status}</Badge></TableCell>
+                      <TableCell className={tx.amount.startsWith('+') ? 'text-green-400' : 'text-red-400'}>{tx.amount}</TableCell>
+                      <TableCell><Badge variant={tx.status === 'Completed' ? 'default' : tx.status === 'Pending' ? 'secondary' : 'destructive'} className={tx.status === 'Completed' ? 'bg-green-500/20 text-green-400' : ''}>{tx.status}</Badge></TableCell>
                       <TableCell className="text-right">{tx.date}</TableCell>
                     </TableRow>
                   ))}
@@ -124,8 +124,8 @@ export default function WalletPage() {
                   {fiatTransactions.map((tx) => (
                     <TableRow key={tx.id}>
                       <TableCell>{tx.type}</TableCell>
-                      <TableCell className={tx.amount.startsWith('+') ? 'text-accent' : 'text-red-400'}>{tx.amount}</TableCell>
-                      <TableCell><Badge variant={tx.status === 'Completed' ? 'default' : tx.status === 'Pending' ? 'secondary' : 'destructive'} className={tx.status === 'Completed' ? 'bg-accent/20 text-accent' : ''}>{tx.status}</Badge></TableCell>
+                      <TableCell className={tx.amount.startsWith('+') ? 'text-green-400' : 'text-red-400'}>{tx.amount}</TableCell>
+                      <TableCell><Badge variant={tx.status === 'Completed' ? 'default' : tx.status === 'Pending' ? 'secondary' : 'destructive'} className={tx.status === 'Completed' ? 'bg-green-500/20 text-green-400' : ''}>{tx.status}</Badge></TableCell>
                       <TableCell className="text-right">{tx.date}</TableCell>
                     </TableRow>
                   ))}

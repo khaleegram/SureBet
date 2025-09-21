@@ -170,7 +170,7 @@ export default function P2PBettingPage() {
         <CardHeader>
             <div className="flex justify-between items-center">
                 <CardTitle>Featured Event</CardTitle>
-                <Badge variant="destructive" className="bg-red-500/20 text-red-300 animate-pulse">
+                <Badge variant="destructive" className="animate-pulse">
                     <Zap className="w-3 h-3 mr-1" />
                     LIVE
                 </Badge>
